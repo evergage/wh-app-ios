@@ -40,6 +40,7 @@
 #import "WHFeedItem.h"
 #import "FavoritesViewController.h"
 #import "DOMParser.h"
+#import "Evergage/Evergage.h"
 
 
 @interface AppDelegate ()<SWRevealViewControllerDelegate>
@@ -51,6 +52,20 @@
 #define USE_STAGING_FEEDS (false)
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+    
+    //Evergage Integration
+    Evergage *evergage = [Evergage sharedInstance];
+    NSString *evgAccountKey = @"demo";
+    NSString *evgDatasetId = @"whitehouse";
+    
+#ifdef DEBUG
+    // Development settings
+    evergage.logLevel = EVGLogLevelWarn;
+    [evergage allowDesignConnections];
+#endif
+    [evergage startWithEvergageAccountKey:evgAccountKey dataset:evgDatasetId];
+    
+    
     // Override point for customization after application launch.
     
     [self getAndDeleteLegacyFavorites];
