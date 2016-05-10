@@ -21,11 +21,23 @@
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
 			<key>CFBundleURLName</key>
 			<string>com.mobomoenterprise.WhiteHouse</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>whitehouse</string>
+			</array>
+		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>com.mobomoenterprise.WhiteHouse.evgscheme</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>evgXFwLv</string>
 			</array>
 		</dict>
 	</array>
