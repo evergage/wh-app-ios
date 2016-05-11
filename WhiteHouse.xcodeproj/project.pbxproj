@@ -41,7 +41,6 @@
 		49ABB89919FFEC3200D8EFA8 /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = 49ABB89819FFEC3200D8EFA8 /* Default.png */; };
 		49ACD5AE1A1651090059A0E1 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 49ACD5AD1A1651090059A0E1 /* CoreData.framework */; };
 		49ACD5B01A1651120059A0E1 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 49ACD5AF1A1651120059A0E1 /* SystemConfiguration.framework */; };
-		49ACD5B21A168AAA0059A0E1 /* libGoogleAnalyticsServices.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 49ACD5B11A168AAA0059A0E1 /* libGoogleAnalyticsServices.a */; };
 		49ACD5B41A168ADB0059A0E1 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 49ACD5B31A168ADB0059A0E1 /* libsqlite3.dylib */; };
 		49ACD5CF1A1A8C920059A0E1 /* post.html in Resources */ = {isa = PBXBuildFile; fileRef = 49ACD5C91A1A8C920059A0E1 /* post.html */; };
 		49ACD5D01A1A8C920059A0E1 /* underscore-min.js in Resources */ = {isa = PBXBuildFile; fileRef = 49ACD5CA1A1A8C920059A0E1 /* underscore-min.js */; };
@@ -149,19 +148,8 @@
 		49A395ED19F7C095001463BA /* FavoritesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FavoritesViewController.m; path = ../FavoritesViewController.m; sourceTree = "<group>"; };
 		49ABB89419FFC42900D8EFA8 /* loading.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = loading.png; sourceTree = "<group>"; };
 		49ABB89819FFEC3200D8EFA8 /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
-		49ACD5A31A1650A60059A0E1 /* GAI.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GAI.h; sourceTree = "<group>"; };
-		49ACD5A41A1650A60059A0E1 /* GAIDictionaryBuilder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GAIDictionaryBuilder.h; sourceTree = "<group>"; };
-		49ACD5A51A1650A60059A0E1 /* GAIEcommerceFields.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GAIEcommerceFields.h; sourceTree = "<group>"; };
-		49ACD5A61A1650A60059A0E1 /* GAIEcommerceProduct.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GAIEcommerceProduct.h; sourceTree = "<group>"; };
-		49ACD5A71A1650A60059A0E1 /* GAIEcommerceProductAction.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GAIEcommerceProductAction.h; sourceTree = "<group>"; };
-		49ACD5A81A1650A60059A0E1 /* GAIEcommercePromotion.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GAIEcommercePromotion.h; sourceTree = "<group>"; };
-		49ACD5A91A1650A60059A0E1 /* GAIFields.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GAIFields.h; sourceTree = "<group>"; };
-		49ACD5AA1A1650A60059A0E1 /* GAILogger.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GAILogger.h; sourceTree = "<group>"; };
-		49ACD5AB1A1650A60059A0E1 /* GAITrackedViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GAITrackedViewController.h; sourceTree = "<group>"; };
-		49ACD5AC1A1650A60059A0E1 /* GAITracker.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GAITracker.h; sourceTree = "<group>"; };
 		49ACD5AD1A1651090059A0E1 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		49ACD5AF1A1651120059A0E1 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
-		49ACD5B11A168AAA0059A0E1 /* libGoogleAnalyticsServices.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libGoogleAnalyticsServices.a; sourceTree = "<group>"; };
 		49ACD5B31A168ADB0059A0E1 /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
 		49ACD5C91A1A8C920059A0E1 /* post.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = post.html; sourceTree = "<group>"; };
 		49ACD5CA1A1A8C920059A0E1 /* underscore-min.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "underscore-min.js"; sourceTree = "<group>"; };
@@ -250,7 +238,6 @@
 				49764F8519F8204700C1CBB6 /* Social.framework in Frameworks */,
 				49A395E919F550EA001463BA /* MediaPlayer.framework in Frameworks */,
 				49EE8D9A19F14595005F4DA0 /* libz.dylib in Frameworks */,
-				49ACD5B21A168AAA0059A0E1 /* libGoogleAnalyticsServices.a in Frameworks */,
 				49EE8D9819F1458F005F4DA0 /* libxml2.dylib in Frameworks */,
 				23C93E94103EF01D53FDDA45 /* libPods.a in Frameworks */,
 			);
@@ -382,7 +369,6 @@
 				49ACD5D81A1E8E060059A0E1 /* ActivityViewCustomActivity.h */,
 				49ACD5D91A1E8E060059A0E1 /* ActivityViewCustomActivity.m */,
 				49ACD5C81A1A8C920059A0E1 /* html */,
-				49ACD5A21A1650960059A0E1 /* GoogleAnalytics */,
 				497261A819FA9D860012AE8A /* DOMParser.h */,
 				497261A919FA9D860012AE8A /* DOMParser.m */,
 				49EE8D7719F01704005F4DA0 /* UIKit+AFNetworking */,
@@ -414,24 +400,6 @@
 				499C9C0119E5ADF60054E900 /* Info.plist */,
 			);
 			name = "Supporting Files";
-			sourceTree = "<group>";
-		};
-		49ACD5A21A1650960059A0E1 /* GoogleAnalytics */ = {
-			isa = PBXGroup;
-			children = (
-				49ACD5B11A168AAA0059A0E1 /* libGoogleAnalyticsServices.a */,
-				49ACD5A31A1650A60059A0E1 /* GAI.h */,
-				49ACD5A41A1650A60059A0E1 /* GAIDictionaryBuilder.h */,
-				49ACD5A51A1650A60059A0E1 /* GAIEcommerceFields.h */,
-				49ACD5A61A1650A60059A0E1 /* GAIEcommerceProduct.h */,
-				49ACD5A71A1650A60059A0E1 /* GAIEcommerceProductAction.h */,
-				49ACD5A81A1650A60059A0E1 /* GAIEcommercePromotion.h */,
-				49ACD5A91A1650A60059A0E1 /* GAIFields.h */,
-				49ACD5AA1A1650A60059A0E1 /* GAILogger.h */,
-				49ACD5AB1A1650A60059A0E1 /* GAITrackedViewController.h */,
-				49ACD5AC1A1650A60059A0E1 /* GAITracker.h */,
-			);
-			name = GoogleAnalytics;
 			sourceTree = "<group>";
 		};
 		49ACD5C81A1A8C920059A0E1 /* html */ = {
@@ -532,6 +500,7 @@
 				499C9BE119E5ADF60054E900 /* Resources */,
 				6BB66B14181E91C69CA82C8E /* Copy Pods Resources */,
 				DED2789FF08695253E3DBDB0 /* Upload Bugsnag dSYM */,
+				3E61187814E9F0AAE824F2B7 /* Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -566,12 +535,12 @@
 		499C9BDB19E5ADF60054E900 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0600;
+				LastUpgradeCheck = 0730;
 				ORGANIZATIONNAME = mobomo;
 				TargetAttributes = {
 					499C9BE219E5ADF60054E900 = {
 						CreatedOnToolsVersion = 6.0.1;
-						DevelopmentTeam = CYP9PN8233;
+						DevelopmentTeam = 44G6DHJ722;
 						SystemCapabilities = {
 							com.apple.BackgroundModes = {
 								enabled = 1;
@@ -651,6 +620,21 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		3E61187814E9F0AAE824F2B7 /* Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods/Pods-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 		6BB66B14181E91C69CA82C8E /* Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -801,6 +785,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Mobomo, LLC";
 				COPY_PHASE_STRIP = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -868,8 +853,8 @@
 			baseConfigurationReference = 2CC9B548365F132DEB7BB131 /* Pods.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Distribution: Mobomo, LLC";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Mobomo, LLC";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -887,8 +872,9 @@
 					"$(PROJECT_DIR)/WhiteHouse/TestFlightSDK3.0.2",
 					"$(PROJECT_DIR)/WhiteHouse",
 				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.mobomoenterprise.WhiteHouse;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "d33ba409-b629-46f3-9541-59cec928eb09";
+				PROVISIONING_PROFILE = "";
 			};
 			name = Debug;
 		};
@@ -897,8 +883,8 @@
 			baseConfigurationReference = 4124134FDE4E7CA9E775BA8F /* Pods.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Distribution: Mobomo, LLC";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Mobomo, LLC";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -916,8 +902,9 @@
 					"$(PROJECT_DIR)/WhiteHouse/TestFlightSDK3.0.2",
 					"$(PROJECT_DIR)/WhiteHouse",
 				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.mobomoenterprise.WhiteHouse;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "d33ba409-b629-46f3-9541-59cec928eb09";
+				PROVISIONING_PROFILE = "";
 			};
 			name = Release;
 		};
@@ -936,6 +923,7 @@
 				);
 				INFOPLIST_FILE = WhiteHouseTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.mobomoenterprise.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/WhiteHouse.app/WhiteHouse";
@@ -953,6 +941,7 @@
 				);
 				INFOPLIST_FILE = WhiteHouseTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.mobomoenterprise.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/WhiteHouse.app/WhiteHouse";

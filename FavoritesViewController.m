@@ -35,10 +35,6 @@
 #import "PostCollectionCell.h"
 #import "UIKit+AFNetworking.h"
 #import "ActivityViewCustomActivity.h"
-#import "GAI.h"
-#import "GAITracker.h"
-#import "GAIDictionaryBuilder.h"
-#import "GAIFields.h"
 #import "AppDelegate.h"
 #import "LiveViewController.h"
 #import "Social/Social.h"
@@ -149,11 +145,6 @@ BOOL alertShowing = NO;
             NSLog(@"Couldn't save favorite");
         }
     }
-    id<GAITracker> tracker = [[GAI sharedInstance] defaultTracker];
-    [tracker send:[[GAIDictionaryBuilder createEventWithCategory:@"addedFavorite"     // Event category (required)
-                                                          action:@"button_press"  // Event action (required)
-                                                           label: post.link         // Event label
-                                                           value:nil] build]];    // Event value
 }
 
 -(void)removeFavoritesObject:(Post *)post{
@@ -176,11 +167,6 @@ BOOL alertShowing = NO;
             }
         }
     }
-    id<GAITracker> tracker = [[GAI sharedInstance] defaultTracker];
-    [tracker send:[[GAIDictionaryBuilder createEventWithCategory:@"removedFavorite"     // Event category (required)
-                                                          action:@"button_press"  // Event action (required)
-                                                           label: post.link         // Event label
-                                                           value:nil] build]];    // Event value
 }
 
 -(NSInteger) indexOfFavorite:(NSDictionary*)fav in:(NSArray*) favs{
