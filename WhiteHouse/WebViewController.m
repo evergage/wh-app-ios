@@ -74,13 +74,14 @@
 -(void)webViewDidFinishLoad:(UIWebView *)webView{
     
     [_activityind stopAnimating];
-    id<GAITracker> tracker = [[GAI sharedInstance] defaultTracker];
-        
-    [tracker send:[[GAIDictionaryBuilder createEventWithCategory:@"webViewLoaded"     // Event category (required)
-                                                              action:@"button_press"  // Event action (required)
-                                                               label:link             // Event label
-                                                               value:nil] build]];    // Event value
     
+//    id<GAITracker> tracker = [[GAI sharedInstance] defaultTracker];
+//        
+//    [tracker send:[[GAIDictionaryBuilder createEventWithCategory:@"webViewLoaded"     // Event category (required)
+//                                                              action:@"button_press"  // Event action (required)
+//                                                               label:link             // Event label
+//                                                               value:nil] build]];    // Event value
+//    
 }
 
 @end

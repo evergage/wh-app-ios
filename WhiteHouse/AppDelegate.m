@@ -72,10 +72,11 @@
     _placeholderImages = [[NSMutableArray alloc] init];
     
     // Google Analytics
-    [GAI sharedInstance].trackUncaughtExceptions = NO;
-    [GAI sharedInstance].dispatchInterval = 20;
-    [[[GAI sharedInstance] logger] setLogLevel:kGAILogLevelVerbose];
-    [[GAI sharedInstance] trackerWithTrackingId:@"UA-12099831-1"];
+//    [GAI sharedInstance].trackUncaughtExceptions = NO;
+//    [GAI sharedInstance].dispatchInterval = 20;
+//    [[[GAI sharedInstance] logger] setLogLevel:kGAILogLevelVerbose];
+//    [[GAI sharedInstance] trackerWithTrackingId:@"UA-12099831-1"];
+    
     
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
     UIColor *blue = [UIColor colorWithRed:0.0 green:0.2 blue:0.4 alpha:1.0];

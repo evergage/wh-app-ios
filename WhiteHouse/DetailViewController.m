@@ -38,6 +38,9 @@
 #import "Constants.h"
 #import "AppDelegate.h"
 #import "LiveViewController.h"
+#import <Evergage/EVGItems.h>
+#import <Evergage/Evergage.h>
+
 
 
 @interface DetailViewController ()
@@ -114,7 +117,61 @@
             self.webView.scrollView.contentInset = insets;
         }
     }
-    [self createBanner];}
+    [self createBanner];
+
+    NSString *id = [post.link substringFromIndex:26];
+    
+    EVGArticle *article = [EVGArticle articleWithId:id
+                                               name:post.title
+                                           subTitle:@""
+                                                url:post.link
+                                     evgDescription:@"" //post.pageDescription
+                           ];
+    article.imageUrl = post.iPadThumbnail;
+    
+    
+    NSError *error = NULL;
+    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@".*\\>(.*)\\<.*"
+                                                                           options:NSRegularExpressionCaseInsensitive
+                                                                             error:&error];
+    
+    NSTextCheckingResult *match = [regex firstMatchInString:post.creator
+                                                    options:0
+                                                      range:NSMakeRange(0, [post.creator length])];
+    NSString *authorName = NULL;
+    if (match) {
+        NSRange matchRange = [match rangeAtIndex:1];
+        if (matchRange.location != NSNotFound) {
+            authorName = [post.creator substringWithRange:matchRange];
+        }
+    }
+    
+    
+    regex = [NSRegularExpression regularExpressionWithPattern:@".*\"(.*)\".*"
+                                                      options:NSRegularExpressionCaseInsensitive
+                                                        error:&error];
+    
+    match = [regex firstMatchInString:post.creator
+                              options:0
+                                range:NSMakeRange(0, [post.creator length])];
+    NSString *authorUrl = NULL;
+    if (match) {
+        NSRange matchRange = [match rangeAtIndex:1];
+        if (matchRange.location != NSNotFound) {
+            authorUrl = [post.creator substringWithRange:matchRange];
+        }
+    }
+    
+    EVGTag *author = [EVGTag tagWithId:authorUrl
+                                  type:EVGTagTypeAuthor
+                                  name:authorName
+                        evgDescription:nil];
+    
+        article.tags = @[author];
+    
+    [self.evergageScreen viewItem:article];
+    
+}
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
@@ -122,12 +179,7 @@
 
 - (void) viewDidAppear:(BOOL)animated{
     [super viewDidAppear:animated];
-    id<GAITracker> tracker = [[GAI sharedInstance] defaultTracker];
-    
-    [tracker send:[[GAIDictionaryBuilder createEventWithCategory:@"detailViewLoaded"     // Event category (required)
-                                                          action:@"button_press"  // Event action (required)
-                                                           label:post.link          // Event label
-                                                           value:nil] build]];    // Event value
+        
 }
 
 -(void) viewWillDisappear:(BOOL)animated{

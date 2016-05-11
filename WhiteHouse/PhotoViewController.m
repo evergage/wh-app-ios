@@ -163,12 +163,12 @@ static NSString * const reuseIdentifier = @"Cell";
     [self.navigationController pushViewController:browser animated:YES];
     
     NSString *photoUrl = [[_photos objectAtIndex:indexPath.row] link];
-    id<GAITracker> tracker = [[GAI sharedInstance] defaultTracker];
-    
-    [tracker send:[[GAIDictionaryBuilder createEventWithCategory:@"photoLoaded"     // Event category (required)
-                                                          action:@"button_press"  // Event action (required)
-                                                           label: photoUrl         // Event label
-                                                           value:nil] build]];    // Event value
+//    id<GAITracker> tracker = [[GAI sharedInstance] defaultTracker];
+//    
+//    [tracker send:[[GAIDictionaryBuilder createEventWithCategory:@"photoLoaded"     // Event category (required)
+//                                                          action:@"button_press"  // Event action (required)
+//                                                           label: photoUrl         // Event label
+//                                                           value:nil] build]];    // Event value
 }
 
 #pragma mark <UICollectionViewDelegate>
