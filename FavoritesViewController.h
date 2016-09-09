@@ -30,6 +30,7 @@
 
 #import <UIKit/UIKit.h>
 #import <MediaPlayer/MediaPlayer.h>
+#import <MessageUI/MessageUI.h>
 #import "SWRevealViewController.h"
 #import "Post.h"
 #import "MWPhotoBrowser.h"

@@ -38,7 +38,6 @@
 #import "Constants.h"
 #import "AppDelegate.h"
 #import "LiveViewController.h"
-#import <Evergage/EVGItems.h>
 #import <Evergage/Evergage.h>
 
 

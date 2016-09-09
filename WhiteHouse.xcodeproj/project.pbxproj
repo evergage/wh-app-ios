@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		23C93E94103EF01D53FDDA45 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 83A3EEA3C06E8EFCFD8DD25E /* libPods.a */; };
 		490053BB19F83FF10009C4C7 /* Post.m in Sources */ = {isa = PBXBuildFile; fileRef = 490053BA19F83FF10009C4C7 /* Post.m */; };
 		490053BF19F8790C0009C4C7 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 490053BE19F8790C0009C4C7 /* MessageUI.framework */; };
 		4946838E1A3256C600353419 /* WHFeedItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 4946838D1A3256C600353419 /* WHFeedItem.m */; };
@@ -77,6 +76,7 @@
 		49EE8D9A19F14595005F4DA0 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 49EE8D9919F14595005F4DA0 /* libz.dylib */; };
 		49F480591A65F4C800F0AEA7 /* WH_logo_3D_CMYK.png in Resources */ = {isa = PBXBuildFile; fileRef = 49F480581A65F4C800F0AEA7 /* WH_logo_3D_CMYK.png */; };
 		7B1C0F9E1CDA7E8600076D1A /* Evergage.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7B1C0F9D1CDA7E8600076D1A /* Evergage.framework */; };
+		AFE4D731981FAEC0E3F10EC0 /* libPods-WhiteHouse.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3337574E05E9344993878389 /* libPods-WhiteHouse.a */; };
 		C347879A1A68076400E0E293 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C34787991A68076400E0E293 /* Default-568h@2x.png */; };
 		C347879F1A68428100E0E293 /* Default-Portrait.png in Resources */ = {isa = PBXBuildFile; fileRef = C347879B1A68428100E0E293 /* Default-Portrait.png */; };
 		C34787A01A68428100E0E293 /* Default-Landscape.png in Resources */ = {isa = PBXBuildFile; fileRef = C347879C1A68428100E0E293 /* Default-Landscape.png */; };
@@ -98,8 +98,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		2CC9B548365F132DEB7BB131 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
-		4124134FDE4E7CA9E775BA8F /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
+		3337574E05E9344993878389 /* libPods-WhiteHouse.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-WhiteHouse.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		490053B919F83FF10009C4C7 /* Post.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Post.h; sourceTree = "<group>"; };
 		490053BA19F83FF10009C4C7 /* Post.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Post.m; sourceTree = "<group>"; };
 		490053BE19F8790C0009C4C7 /* MessageUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MessageUI.framework; path = System/Library/Frameworks/MessageUI.framework; sourceTree = SDKROOT; };
@@ -211,8 +210,9 @@
 		49EE8D9719F1458F005F4DA0 /* libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = usr/lib/libxml2.dylib; sourceTree = SDKROOT; };
 		49EE8D9919F14595005F4DA0 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		49F480581A65F4C800F0AEA7 /* WH_logo_3D_CMYK.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = WH_logo_3D_CMYK.png; sourceTree = "<group>"; };
+		533E569F3689A68903956E6E /* Pods-WhiteHouse.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-WhiteHouse.debug.xcconfig"; path = "Pods/Target Support Files/Pods-WhiteHouse/Pods-WhiteHouse.debug.xcconfig"; sourceTree = "<group>"; };
+		6B7D9EAD8029734C42BF20B5 /* Pods-WhiteHouse.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-WhiteHouse.release.xcconfig"; path = "Pods/Target Support Files/Pods-WhiteHouse/Pods-WhiteHouse.release.xcconfig"; sourceTree = "<group>"; };
 		7B1C0F9D1CDA7E8600076D1A /* Evergage.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Evergage.framework; sourceTree = "<group>"; };
-		83A3EEA3C06E8EFCFD8DD25E /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		C34787991A68076400E0E293 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 		C347879B1A68428100E0E293 /* Default-Portrait.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-Portrait.png"; sourceTree = "<group>"; };
 		C347879C1A68428100E0E293 /* Default-Landscape.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-Landscape.png"; sourceTree = "<group>"; };
@@ -239,7 +239,7 @@
 				49A395E919F550EA001463BA /* MediaPlayer.framework in Frameworks */,
 				49EE8D9A19F14595005F4DA0 /* libz.dylib in Frameworks */,
 				49EE8D9819F1458F005F4DA0 /* libxml2.dylib in Frameworks */,
-				23C93E94103EF01D53FDDA45 /* libPods.a in Frameworks */,
+				AFE4D731981FAEC0E3F10EC0 /* libPods-WhiteHouse.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -253,15 +253,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		11C59468EA8E68F83E38C646 /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				2CC9B548365F132DEB7BB131 /* Pods.debug.xcconfig */,
-				4124134FDE4E7CA9E775BA8F /* Pods.release.xcconfig */,
-			);
-			name = Pods;
-			sourceTree = "<group>";
-		};
 		1A312FA1CEB8337733EFA11C /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -277,7 +268,7 @@
 				49A395E819F550EA001463BA /* MediaPlayer.framework */,
 				49EE8D9919F14595005F4DA0 /* libz.dylib */,
 				49EE8D9719F1458F005F4DA0 /* libxml2.dylib */,
-				83A3EEA3C06E8EFCFD8DD25E /* libPods.a */,
+				3337574E05E9344993878389 /* libPods-WhiteHouse.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -316,7 +307,7 @@
 				499C9BFF19E5ADF60054E900 /* WhiteHouseTests */,
 				499C9BE419E5ADF60054E900 /* Products */,
 				1A312FA1CEB8337733EFA11C /* Frameworks */,
-				11C59468EA8E68F83E38C646 /* Pods */,
+				B6E984DB31511644CE17980E /* Pods */,
 			);
 			sourceTree = "<group>";
 		};
@@ -487,6 +478,15 @@
 			name = ModelData;
 			sourceTree = "<group>";
 		};
+		B6E984DB31511644CE17980E /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				533E569F3689A68903956E6E /* Pods-WhiteHouse.debug.xcconfig */,
+				6B7D9EAD8029734C42BF20B5 /* Pods-WhiteHouse.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -494,13 +494,13 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 499C9C0619E5ADF60054E900 /* Build configuration list for PBXNativeTarget "WhiteHouse" */;
 			buildPhases = (
-				E8F23ED4390261DF5F2A3937 /* Check Pods Manifest.lock */,
+				DE95F8F69B12881B627B7368 /* [CP] Check Pods Manifest.lock */,
 				499C9BDF19E5ADF60054E900 /* Sources */,
 				499C9BE019E5ADF60054E900 /* Frameworks */,
 				499C9BE119E5ADF60054E900 /* Resources */,
-				6BB66B14181E91C69CA82C8E /* Copy Pods Resources */,
 				DED2789FF08695253E3DBDB0 /* Upload Bugsnag dSYM */,
-				3E61187814E9F0AAE824F2B7 /* Embed Pods Frameworks */,
+				8C6D5CE05303FC415A613275 /* [CP] Embed Pods Frameworks */,
+				BF8A0168C6B479F9ADBBA02A /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -620,34 +620,49 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		3E61187814E9F0AAE824F2B7 /* Embed Pods Frameworks */ = {
+		8C6D5CE05303FC415A613275 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "Embed Pods Frameworks";
+			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods/Pods-frameworks.sh\"\n";
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-WhiteHouse/Pods-WhiteHouse-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		6BB66B14181E91C69CA82C8E /* Copy Pods Resources */ = {
+		BF8A0168C6B479F9ADBBA02A /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "Copy Pods Resources";
+			name = "[CP] Copy Pods Resources";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods/Pods-resources.sh\"\n";
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-WhiteHouse/Pods-WhiteHouse-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		DE95F8F69B12881B627B7368 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 		DED2789FF08695253E3DBDB0 /* Upload Bugsnag dSYM */ = {
@@ -663,21 +678,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /usr/bin/ruby;
 			shellScript = "\nif ENV[\"DEBUG_INFORMATION_FORMAT\"] != \"dwarf-with-dsym\" or ENV[\"PLATFORM_NAME\"] == \"iphonesimulator\"\n  exit\nend\n\nfork do\n  Process.setsid\n  STDIN.reopen(\"/dev/null\")\n  STDOUT.reopen(\"/dev/null\", \"a\")\n  STDERR.reopen(\"/dev/null\", \"a\")\n\n  require 'shellwords'\n\n  Dir[\"#{ENV[\"DWARF_DSYM_FOLDER_PATH\"]}/#{ENV[\"DWARF_DSYM_FILE_NAME\"]}/Contents/Resources/DWARF/*\"].each do |dsym|\n    system(\"curl -F dsym=@#{Shellwords.escape(dsym)} -F projectRoot=#{Shellwords.escape(ENV[\"PROJECT_DIR\"])} https://upload.bugsnag.com/\")\n  end\nend\n";
-			showEnvVarsInLog = 0;
-		};
-		E8F23ED4390261DF5F2A3937 /* Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Check Pods Manifest.lock";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -850,7 +850,7 @@
 		};
 		499C9C0719E5ADF60054E900 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 2CC9B548365F132DEB7BB131 /* Pods.debug.xcconfig */;
+			baseConfigurationReference = 533E569F3689A68903956E6E /* Pods-WhiteHouse.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -880,7 +880,7 @@
 		};
 		499C9C0819E5ADF60054E900 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 4124134FDE4E7CA9E775BA8F /* Pods.release.xcconfig */;
+			baseConfigurationReference = 6B7D9EAD8029734C42BF20B5 /* Pods-WhiteHouse.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";

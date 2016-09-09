@@ -15,6 +15,6 @@ build/*
 *.perspective
 *.perspectivev3
 *.pbxuser
-*.xcworkspace
+project.xcworkspace
 xcuserdata
 scratch/

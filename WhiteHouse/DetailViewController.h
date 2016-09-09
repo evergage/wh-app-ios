@@ -31,7 +31,6 @@
 
 #import <UIKit/UIKit.h>
 #import <MessageUI/MessageUI.h>
-#import <MessageUI/MFMailComposeViewController.h>
 #import "Post.h"
 @interface DetailViewController : UIViewController <MFMailComposeViewControllerDelegate, UIWebViewDelegate, UIActionSheetDelegate>{
     Post *post;

@@ -40,7 +40,7 @@
 #import "WHFeedItem.h"
 #import "FavoritesViewController.h"
 #import "DOMParser.h"
-#import "Evergage/Evergage.h"
+#import <Evergage/Evergage.h>
 
 
 @interface AppDelegate ()<SWRevealViewControllerDelegate>
