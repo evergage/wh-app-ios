@@ -46,6 +46,11 @@
     _sidebarButton.target = self.revealViewController;
     _sidebarButton.action = @selector(revealToggle:);
     
+    // if nav has previous item to go back to, revert to back button instead of burger menu
+    if (self.navigationController.childViewControllers.count > 1) {
+        self.navigationItem.leftBarButtonItem = nil;
+    }
+    
     _webView.delegate = self;
     
     if (url){
