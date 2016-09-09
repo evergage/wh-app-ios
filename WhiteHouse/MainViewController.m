@@ -230,6 +230,7 @@
     if([segue.identifier isEqualToString:@"showWebView"]){
         WebViewController *w = segue.destinationViewController;
         w.url = _liveLink;
+        // no title!
     }else{
         Post *post;
         if (_tblBlogs.superview == self.view){

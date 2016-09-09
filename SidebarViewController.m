@@ -36,6 +36,7 @@
 #import "AppDelegate.h"
 #import "ActivityViewCustomActivity.h"
 #import "FavoritesViewController.h"
+#import "WebViewController.h"
 
 @interface SidebarViewController ()
 @property (nonatomic, strong) NSArray *arrPhotoData;
@@ -174,7 +175,7 @@
 {
     if([segue.identifier isEqualToString:@"SearchDetail"]){
         NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
-        UINavigationController *destViewController = (UINavigationController*)segue.destinationViewController;
+        WebViewController *destViewController = (WebViewController*)segue.destinationViewController;
         destViewController.title = [[_searchResults objectAtIndex:indexPath.row] objectForKey:@"unescapedUrl"];
         SWRevealViewController *revealController = self.revealViewController;
         UINavigationController *newFrontController = [[UINavigationController alloc] initWithRootViewController:destViewController];
