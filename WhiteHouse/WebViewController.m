@@ -79,7 +79,8 @@
 -(void)webViewDidFinishLoad:(UIWebView *)webView{
     
     [_activityind stopAnimating];
-    
+    [webView stringByEvaluatingJavaScriptFromString:@"window.scroll(0, document.getElementsByTagName('h1')[0].offsetTop);"];
+
 //    id<GAITracker> tracker = [[GAI sharedInstance] defaultTracker];
 //        
 //    [tracker send:[[GAIDictionaryBuilder createEventWithCategory:@"webViewLoaded"     // Event category (required)
