@@ -37,30 +37,19 @@
 #import "ActivityViewCustomActivity.h"
 #import "FavoritesViewController.h"
 #import "WebViewController.h"
+#import "RecsViewController.h"
+#import <Evergage/Evergage.h>
 
 @interface SidebarViewController ()
+@property (nonatomic, strong) AppDelegate *appDelegate;
 @property (nonatomic, strong) NSArray *arrPhotoData;
-
-
 @end
 
 @implementation SidebarViewController
 
 #define IS_IOS_8_OR_LATER ([[[UIDevice currentDevice] systemVersion] floatValue] >= 8.0)
 
-- (id)initWithStyle:(UITableViewStyle)style
-{
-    self = [super initWithStyle:style];
-    if (self) {
-        // Custom initialization
-    }
-    return self;
-    
-    
-}
-
-- (void)viewDidLoad
-{
+- (void)viewDidLoad {
     [super viewDidLoad];
     
     UIImageView *tempImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"wh-nav-menu.png"]];
@@ -70,8 +59,7 @@
     self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
     self.tableView.backgroundView = tempImageView;
     
-    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-    _menuItems = appDelegate.menuItems;
+    _appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     
     [_searchBar setDelegate:self];
     [self.tableView setContentInset:UIEdgeInsetsMake(150,0,0,0)];
@@ -118,13 +106,13 @@
     return 1;
 }
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
-{
-    if ([tableView isEqual:_navTableView]){
-        return [self.menuItems count];
-    }
-    else {
-        return [self.searchResults count ];
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    if (![tableView isEqual:_navTableView]) {
+        return self.searchResults.count;
+    } else if (self.appDelegate.useEvergageRecs) {
+        return self.appDelegate.menuItems.count;
+    } else {
+        return self.appDelegate.menuItems.count - 1; // hide Recommendations, last menu item
     }
 }
 
@@ -134,7 +122,7 @@
     if ([tableView isEqual:_navTableView]) {
         cell = [tableView dequeueReusableCellWithIdentifier:@"navCell" forIndexPath:indexPath];
         PostTableCell *navCell = (PostTableCell *)cell;
-        navCell.titleLabel.text = [[self.menuItems objectAtIndex:indexPath.row] objectForKey:@"title"];
+        navCell.titleLabel.text = [[self.appDelegate.menuItems objectAtIndex:indexPath.row] objectForKey:@"title"];
         if (indexPath.row == 4){
             NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
             NSString *docDirectory = [paths objectAtIndex:0];
@@ -157,7 +145,8 @@
         static NSString *CellIdentifier = @"Cell";
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
         if (indexPath.row < _searchResults.count ){
-            NSData *data = [[[_searchResults objectAtIndex:indexPath.row] objectForKey:@"title"] dataUsingEncoding:NSASCIIStringEncoding allowLossyConversion:YES];
+            NSString *key = self.appDelegate.useEvergageRecs ? @"name" : @"title";
+            NSData *data = [[[_searchResults objectAtIndex:indexPath.row] objectForKey:key] dataUsingEncoding:NSASCIIStringEncoding allowLossyConversion:YES];
             NSString *cleanString = [[NSString alloc] initWithData:data encoding:NSASCIIStringEncoding];
             NSError *error = nil;
             NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"\\?" options:NSRegularExpressionCaseInsensitive error:&error];
@@ -176,16 +165,17 @@
     if([segue.identifier isEqualToString:@"SearchDetail"]){
         NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
         WebViewController *destViewController = (WebViewController*)segue.destinationViewController;
-        destViewController.title = [[_searchResults objectAtIndex:indexPath.row] objectForKey:@"unescapedUrl"];
+        NSString *key = self.appDelegate.useEvergageRecs ? @"url" : @"unescapedUrl";
+        destViewController.title = [[_searchResults objectAtIndex:indexPath.row] objectForKey:key];
         SWRevealViewController *revealController = self.revealViewController;
         UINavigationController *newFrontController = [[UINavigationController alloc] initWithRootViewController:destViewController];
         [revealController pushFrontViewController:newFrontController animated:YES];
     }else{
         NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
         UINavigationController *destViewController = (UINavigationController*)segue.destinationViewController;
-        destViewController.title = [[_menuItems objectAtIndex:indexPath.row] objectForKey:@"title"];
+        destViewController.title = [[self.appDelegate.menuItems objectAtIndex:indexPath.row] objectForKey:@"title"];
         AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-        appDelegate.activeFeed = [[_menuItems objectAtIndex:indexPath.row] objectForKey:@"feed-url"];
+        appDelegate.activeFeed = [[self.appDelegate.menuItems objectAtIndex:indexPath.row] objectForKey:@"feed-url"];
         
         SWRevealViewController *revealController = self.revealViewController;
         UINavigationController *newFrontController = [[UINavigationController alloc] initWithRootViewController:destViewController];
@@ -222,6 +212,16 @@
                     break;
                 }
                 case 6: {
+                    self.appDelegate.useEvergageRecs = !self.appDelegate.useEvergageRecs;
+                    [_navTableView reloadData]; // Since recommendations cell below will be added/removed
+                    if ([self.revealViewController.frontViewController isKindOfClass:[UINavigationController class]]
+                        && [((UINavigationController *)self.revealViewController.frontViewController).viewControllers.firstObject isKindOfClass:[RecsViewController class]]) {
+                        // Currently viewing Recommendations, go back to blogs/main
+                        [self performSegueWithIdentifier:@"BlogSegue" sender:self];
+                    }
+                    return; // don't want FrontViewPositionLeft after break
+                }
+                case 7: {
                     [self performSegueWithIdentifier:@"RecsSegue" sender:self];
                     break;
                 }
@@ -319,30 +319,52 @@
 
 -(void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
 {
-    if (_searchTableView.hidden){
+    if (_searchTableView.hidden) {
         _searchTableView.hidden = false;
     }
-    // 1
-    NSString *searchQuery = [NSString stringWithFormat:@"http://search.usa.gov/api/search.json?affiliate=wh&index=web&query='%@'",searchText];
+    
+    if (!searchText.length) {
+        _searchResults = @[];
+        [_searchTableView reloadData];
+        return;
+    }
+    
+    void (^successBlock)(AFHTTPRequestOperation *operation, id responseObject);
+    void (^failBlock)(AFHTTPRequestOperation *operation, NSError *error) = ^(AFHTTPRequestOperation *operation, NSError *error) {
+        NSLog(@"Nothing found %@", error);
+    };
+    NSString *searchQuery;
+    
+    if (self.appDelegate.useEvergageRecs) {
+        // Smart Search
+        NSString *userId = [Evergage sharedInstance].userId;
+        if (userId.length == 0) {
+            // todo pass anonID if userId not set
+            userId = @"TestSmartSearchUser";
+        }
+        searchQuery = [NSString stringWithFormat:@"https://demo.evergage.com/api/dataset/whitehouse/recommendations/EMbKG/smartSearch?userId=%@&query=%@", userId, searchText.lowercaseString];
+        successBlock = ^(AFHTTPRequestOperation *operation, id responseObject) {
+            NSLog(@"result is:%@", responseObject);
+            _searchResults = responseObject[@"recommendedItems"];
+            [_searchTableView reloadData];
+            
+        };
+    } else {
+        searchQuery = [NSString stringWithFormat:@"http://search.usa.gov/api/search.json?affiliate=wh&index=web&query='%@'",searchText];
+        successBlock = ^(AFHTTPRequestOperation *operation, id responseObject) {
+            _searchResults = responseObject[@"results"];
+            NSLog(@"json is:%@", responseObject);
+            [_searchTableView reloadData];
+            
+        };
+    }
+
     NSURL *url = [NSURL URLWithString:searchQuery];
     NSURLRequest *request = [NSURLRequest requestWithURL:url];
-    
-    // 2
     AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc] initWithRequest:request];
     operation.responseSerializer = [AFJSONResponseSerializer serializer];
-    
-    [operation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
-        
-        // 3
-        _searchResults = responseObject[@"results"];
-        NSLog(@"json is:%@", responseObject);
-        [_searchTableView reloadData];
-        
-    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-        NSLog(@"Nothing found");
-    }];
-    
-    // 5
+
+    [operation setCompletionBlockWithSuccess:successBlock failure:failBlock];
     [operation start];
 }
 

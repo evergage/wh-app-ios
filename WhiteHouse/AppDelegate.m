@@ -175,6 +175,11 @@
     }
 }
 
+- (void)setUseEvergageRecs:(BOOL)useEvergageRecs {
+    _useEvergageRecs = useEvergageRecs;
+    _menuItems[_menuItems.count-2] = @{@"title" : [NSString stringWithFormat:@"%@ Recs", useEvergageRecs ? @"Disable" : @"Enable"]};
+}
+
 - (void) setupNavigation{
     // Updating menu from whitehouse JSON
     
@@ -186,9 +191,9 @@
     NSString *docDirectory = [paths objectAtIndex:0];
     NSString *menuPath = [docDirectory stringByAppendingPathComponent:@"menuData"];
     
-    // todo: entry to enable/disable recs/smart-search?
     NSArray *menuItemsToAdd = @[
                                 @{@"title" : @"Favorites"},
+                                @{@"title" : [NSString stringWithFormat:@"%@ Recs", self.useEvergageRecs ? @"Disable" : @"Enable"]},
                                 @{@"title" : @"Recommendations"}
                                 ];
     
@@ -203,6 +208,7 @@
         _menuJSON = json[@"feeds"];
         [_menuJSON writeToFile:menuPath atomically: YES];
         _menuItems = [[NSMutableArray alloc] initWithArray: _menuJSON];
+        [_menuItems addObjectsFromArray:menuItemsToAdd];
         [self preloadData];
         
     }else{

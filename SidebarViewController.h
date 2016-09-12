@@ -33,7 +33,6 @@
 #import "SWRevealViewController.h"
 
 @interface SidebarViewController : UITableViewController <UISearchBarDelegate, UISearchDisplayDelegate, SWRevealViewControllerDelegate>
-@property (nonatomic, strong) NSArray *menuItems;
 @property (strong, nonatomic) IBOutlet UITableView *navTableView;
 @property (strong, nonatomic) IBOutlet UITableView *searchTableView;
 @property (weak, nonatomic) IBOutlet UISearchBar *searchBar;
