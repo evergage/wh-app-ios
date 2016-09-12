@@ -85,6 +85,7 @@
 		C34CAE6C1AA4B7F900F4FC7F /* feeds.json in Resources */ = {isa = PBXBuildFile; fileRef = C34CAE6B1AA4B7F900F4FC7F /* feeds.json */; };
 		C34E8B6D1A5C9CE50036AE2E /* play@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C34E8B6B1A5C9CE50036AE2E /* play@2x.png */; };
 		C34E8B6E1A5C9CE50036AE2E /* play.png in Resources */ = {isa = PBXBuildFile; fileRef = C34E8B6C1A5C9CE50036AE2E /* play.png */; };
+		F9AD65451D86FD9700C1259C /* RecsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F9AD65441D86FD9700C1259C /* RecsViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -222,6 +223,8 @@
 		C34E8B6B1A5C9CE50036AE2E /* play@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "play@2x.png"; sourceTree = "<group>"; };
 		C34E8B6C1A5C9CE50036AE2E /* play.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = play.png; sourceTree = "<group>"; };
 		C3EDE33C1A8E497D00480E2C /* Constants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Constants.h; sourceTree = "<group>"; };
+		F9AD65431D86FD9700C1259C /* RecsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RecsViewController.h; sourceTree = "<group>"; };
+		F9AD65441D86FD9700C1259C /* RecsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RecsViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -345,6 +348,8 @@
 				496889F419E881F700A6833A /* VideoViewController.m */,
 				49A395EC19F7C095001463BA /* FavoritesViewController.h */,
 				49A395ED19F7C095001463BA /* FavoritesViewController.m */,
+				F9AD65431D86FD9700C1259C /* RecsViewController.h */,
+				F9AD65441D86FD9700C1259C /* RecsViewController.m */,
 				499C9BF319E5ADF60054E900 /* Images.xcassets */,
 				499C9BF519E5ADF60054E900 /* LaunchScreen.xib */,
 				49EE8DAF19F1ACCF005F4DA0 /* ModelData */,
@@ -689,6 +694,7 @@
 			files = (
 				49EE8D8B19F01704005F4DA0 /* UIAlertView+AFNetworking.m in Sources */,
 				49EE8D8D19F01704005F4DA0 /* UIImageView+AFNetworking.m in Sources */,
+				F9AD65451D86FD9700C1259C /* RecsViewController.m in Sources */,
 				49EE8D8C19F01704005F4DA0 /* UIButton+AFNetworking.m in Sources */,
 				49ACD5DA1A1E8E060059A0E1 /* ActivityViewCustomActivity.m in Sources */,
 				49B01C131A091E3200264FDC /* PostCollectionCell.m in Sources */,

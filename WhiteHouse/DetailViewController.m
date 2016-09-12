@@ -122,51 +122,59 @@
     
     EVGArticle *article = [EVGArticle articleWithId:id
                                                name:post.title
-                                           subTitle:@""
+                                           subTitle:nil
                                                 url:post.link
-                                     evgDescription:@"" //post.pageDescription
+                                     evgDescription:nil //post.pageDescription
                            ];
     article.imageUrl = post.iPadThumbnail;
     
-    
-    NSError *error = NULL;
-    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@".*\\>(.*)\\<.*"
-                                                                           options:NSRegularExpressionCaseInsensitive
-                                                                             error:&error];
-    
-    NSTextCheckingResult *match = [regex firstMatchInString:post.creator
-                                                    options:0
-                                                      range:NSMakeRange(0, [post.creator length])];
-    NSString *authorName = NULL;
-    if (match) {
-        NSRange matchRange = [match rangeAtIndex:1];
-        if (matchRange.location != NSNotFound) {
-            authorName = [post.creator substringWithRange:matchRange];
-        }
+    if (post.pubDate) {
+        // todo: re-use static date formatter, always used on main
+        NSDateFormatter *rssDateFormatter = [[NSDateFormatter alloc] init];
+        [rssDateFormatter setDateFormat:@"EEE, dd MMM yyyy HH:mm:ss ZZ"];
+        article.published = [rssDateFormatter dateFromString:post.pubDate];
     }
     
-    
-    regex = [NSRegularExpression regularExpressionWithPattern:@".*\"(.*)\".*"
-                                                      options:NSRegularExpressionCaseInsensitive
-                                                        error:&error];
-    
-    match = [regex firstMatchInString:post.creator
-                              options:0
-                                range:NSMakeRange(0, [post.creator length])];
-    NSString *authorUrl = NULL;
-    if (match) {
-        NSRange matchRange = [match rangeAtIndex:1];
-        if (matchRange.location != NSNotFound) {
-            authorUrl = [post.creator substringWithRange:matchRange];
+    if (post.creator) {
+        NSError *error = NULL;
+        NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@".*\\>(.*)\\<.*"
+                                                                               options:NSRegularExpressionCaseInsensitive
+                                                                                 error:&error];
+        
+        NSTextCheckingResult *match = [regex firstMatchInString:post.creator
+                                                        options:0
+                                                          range:NSMakeRange(0, [post.creator length])];
+        NSString *authorName = NULL;
+        if (match) {
+            NSRange matchRange = [match rangeAtIndex:1];
+            if (matchRange.location != NSNotFound) {
+                authorName = [post.creator substringWithRange:matchRange];
+            }
         }
-    }
-    
-    EVGTag *author = [EVGTag tagWithId:authorUrl
-                                  type:EVGTagTypeAuthor
-                                  name:authorName
-                        evgDescription:nil];
-    
+        
+        
+        regex = [NSRegularExpression regularExpressionWithPattern:@".*\"(.*)\".*"
+                                                          options:NSRegularExpressionCaseInsensitive
+                                                            error:&error];
+        
+        match = [regex firstMatchInString:post.creator
+                                  options:0
+                                    range:NSMakeRange(0, [post.creator length])];
+        NSString *authorUrl = NULL;
+        if (match) {
+            NSRange matchRange = [match rangeAtIndex:1];
+            if (matchRange.location != NSNotFound) {
+                authorUrl = [post.creator substringWithRange:matchRange];
+            }
+        }
+        
+        EVGTag *author = [EVGTag tagWithId:authorUrl
+                                      type:EVGTagTypeAuthor
+                                      name:authorName
+                            evgDescription:nil];
+        
         article.tags = @[author];
+    }
     
     [self.evergageScreen viewItem:article];
     

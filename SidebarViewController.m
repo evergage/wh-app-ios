@@ -194,38 +194,40 @@
     
 }
 
--(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
-    if([tableView isEqual:_navTableView]){
-            switch ([[self.tableView indexPathForSelectedRow]row])
-            {
-                case 0:
-                {
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    if([tableView isEqual:_navTableView]) {
+            switch ([[self.tableView indexPathForSelectedRow]row]) {
+                case 0: {
                     [self performSegueWithIdentifier:@"BlogSegue" sender:self];
                     break;
-                }case 1:
-                {
+                }
+                case 1: {
                     [self performSegueWithIdentifier:@"BriefingRoomSegue" sender:self];
                     break;
-                }case 2:
-                {
+                }
+                case 2: {
                     [self performSegueWithIdentifier:@"PhotoSegue" sender:self];
                     break;
-                }case 3:
-                {
+                }
+                case 3: {
                     [self performSegueWithIdentifier:@"VideoSegue" sender:self];
                     break;
                 }
-                case 4:
-                {
+                case 4: {
                     [self performSegueWithIdentifier:@"LiveSegue" sender:self];
                     break;
-                }case 5:
-                {
+                }
+                case 5: {
                     [self performSegueWithIdentifier:@"FavoritesSegue" sender:self];
+                    break;
+                }
+                case 6: {
+                    [self performSegueWithIdentifier:@"RecsSegue" sender:self];
+                    break;
                 }
             }
         [self.revealViewController setFrontViewPosition:FrontViewPositionLeft];
-    }else if ([tableView isEqual:_searchTableView]) {
+    } else if ([tableView isEqual:_searchTableView]) {
         [self performSegueWithIdentifier:@"SearchDetail" sender:self];
     }
 }

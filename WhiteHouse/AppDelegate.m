@@ -34,8 +34,6 @@
 #import "LiveViewController.h"
 #import "MainViewController.h"
 #import "SidebarViewController.h"
-#import "Bugsnag.h"
-#import "GAI.h"
 #import "AFHTTPRequestOperation.h"
 #import "WHFeedItem.h"
 #import "FavoritesViewController.h"
@@ -68,14 +66,7 @@
     
     // Override point for customization after application launch.
     
-    [self getAndDeleteLegacyFavorites];
     _placeholderImages = [[NSMutableArray alloc] init];
-    
-    // Google Analytics
-//    [GAI sharedInstance].trackUncaughtExceptions = NO;
-//    [GAI sharedInstance].dispatchInterval = 20;
-//    [[[GAI sharedInstance] logger] setLogLevel:kGAILogLevelVerbose];
-//    [[GAI sharedInstance] trackerWithTrackingId:@"UA-12099831-1"];
     
     
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
@@ -99,8 +90,6 @@
     
     [application setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
     
-    [Bugsnag startBugsnagWithApiKey:@"7cd510d298a81f91d2ebfcfe29cba2de"];
-    
     [self setupNavigation];
     
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
@@ -123,11 +112,6 @@
     return NO;
 }
 
-- (void)applicationWillResignActive:(UIApplication *)application {
-    // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
-    // Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.
-}
-
 - (void)applicationDidEnterBackground:(UIApplication *)application {
     // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
     // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
@@ -135,18 +119,6 @@
     [_blogData removeAllObjects];
     [_videoData removeAllObjects];
     [_briefingRoomData removeAllObjects];
-}
-
-- (void)applicationWillEnterForeground:(UIApplication *)application {
-    // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
-}
-
-- (void)applicationDidBecomeActive:(UIApplication *)application {
-    // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
-}
-
-- (void)applicationWillTerminate:(UIApplication *)application {
-    // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
 }
 
 # pragma BackgroundFetch
@@ -203,73 +175,6 @@
     }
 }
 
-# pragma gather and delete legacy app favorites
-
--(void)getAndDeleteLegacyFavorites{
-    @try {
-        NSFileManager *fileManager = [[NSFileManager alloc] init];
-        NSArray *pathsList = [fileManager URLsForDirectory:NSApplicationSupportDirectory inDomains:NSUserDomainMask];
-        NSURL *directoryURL = [pathsList objectAtIndex:0];
-        NSString *databasePath = [[directoryURL URLByAppendingPathComponent:@"feed_cache.sqlite"] absoluteString];
-        
-        const char* sqlStatement = "SELECT data FROM feed_items";
-        sqlite3_stmt *statement;
-        if (sqlite3_open([databasePath UTF8String], &(_articlesDB)) == SQLITE_OK){
-            if( sqlite3_prepare_v2(_articlesDB, sqlStatement, -1, &statement, NULL) == SQLITE_OK )
-            {
-                FavoritesViewController * favoriteController = [[FavoritesViewController alloc] init];
-                while( sqlite3_step(statement) == SQLITE_ROW )
-                {
-                    const void* bytes = sqlite3_column_blob(statement, 0);
-                    int numBytes = sqlite3_column_bytes(statement, 0);
-                    
-                    // and then unarchive the feed item from the blob
-                    NSData *itemData = [NSData dataWithBytes:bytes length:numBytes];
-                    WHFeedItem *item = [NSKeyedUnarchiver unarchiveObjectWithData:itemData];
-                    
-                    NSArray *mediaSet = [item.mediaThumbnails allObjects];
-                    NSString *image = [[[mediaSet objectAtIndex:0] URL] absoluteString];
-                    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-                    [formatter setDateFormat:@"EEE, d MMM yyyy HH:mm:ss Z"];
-                    NSString *stringFromDate = [formatter stringFromDate:item.pubDate];
-                    NSDictionary *postDict = [NSMutableDictionary dictionaryWithObjectsAndKeys:
-                                              item.title, @"title",
-                                              @"post", @"type",
-                                              stringFromDate, @"pubDate",
-                                              item.descriptionText, @"pageDescription",
-                                              item.creator, @"creator",
-                                              [item.link absoluteString], @"url",
-                                              image , @"iPadThumbnail",
-                                              image, @"mobile2048",
-                                              nil];
-                    Post *post = [Post postFromDictionary:postDict];
-                    [favoriteController addFavoritesObject:post];
-                }
-                NSString *query = @"delete from feed_items";
-                const char *sqlStatement = [query UTF8String];
-                sqlite3_stmt *compiledStatement;
-                if(sqlite3_prepare_v2(_articlesDB, sqlStatement, -1, &compiledStatement, NULL) == SQLITE_OK) {
-                    // Loop through the results and add them to the feeds array
-                    while(sqlite3_step(compiledStatement) == SQLITE_ROW) {
-                        NSLog(@"Deleted legacy favorite");
-                    }
-                    sqlite3_finalize(compiledStatement);
-                }
-            }
-            else
-            {
-                NSLog( @"Failed from sqlite3_prepare_v2. Error is:  %s", sqlite3_errmsg(_articlesDB) );
-            }
-        }
-        
-        // Finalize and close database.
-//        sqlite3_finalize(statement);
-    }
-    @catch (NSException *exception) {
-        NSLog(@"Error retrieving legacy favorites");
-    }
-}
-
 - (void) setupNavigation{
     // Updating menu from whitehouse JSON
     
@@ -281,10 +186,11 @@
     NSString *docDirectory = [paths objectAtIndex:0];
     NSString *menuPath = [docDirectory stringByAppendingPathComponent:@"menuData"];
     
-    NSDictionary *favMenuItem = [NSMutableDictionary dictionaryWithObjectsAndKeys:
-                                 @"Favorites", @"title",
-                                 nil, @"feed-url",
-                                 nil];
+    // todo: entry to enable/disable recs/smart-search?
+    NSArray *menuItemsToAdd = @[
+                                @{@"title" : @"Favorites"},
+                                @{@"title" : @"Recommendations"}
+                                ];
     
     if USE_STAGING_FEEDS {
         NSString *file = [[NSBundle mainBundle] pathForResource:@"feeds" ofType:@"json"];
@@ -297,7 +203,6 @@
         _menuJSON = json[@"feeds"];
         [_menuJSON writeToFile:menuPath atomically: YES];
         _menuItems = [[NSMutableArray alloc] initWithArray: _menuJSON];
-        [_menuItems addObject:favMenuItem];
         [self preloadData];
         
     }else{
@@ -312,7 +217,7 @@
             }
             if ([[NSFileManager defaultManager] fileExistsAtPath:menuPath]) {
                 _menuItems = [[NSMutableArray alloc] initWithContentsOfFile:menuPath];
-                [_menuItems addObject:favMenuItem];
+                [_menuItems addObjectsFromArray:menuItemsToAdd];
             }
             //        [_searchTableView reloadData];    uncommment to force relad of menu config
             
@@ -322,7 +227,7 @@
             
             if ([[NSFileManager defaultManager] fileExistsAtPath:menuPath]) {
                 _menuItems = [[NSMutableArray alloc] initWithContentsOfFile:menuPath];
-                [_menuItems addObject:favMenuItem];
+                [_menuItems addObjectsFromArray:menuItemsToAdd];
             }
             NSLog(@"Error fetching menu config");
         }];
@@ -333,6 +238,7 @@
     
     if ([[NSFileManager defaultManager] fileExistsAtPath:menuPath]) {
         _menuItems = [[NSMutableArray alloc] initWithContentsOfFile:menuPath];
+        [_menuItems addObjectsFromArray:menuItemsToAdd];
         _activeFeed = [[_menuItems objectAtIndex:0] objectForKey:@"feed-url"];
         _liveFeed = [[_menuItems objectAtIndex:4] objectForKey:@"feed-url"];
     }else{
@@ -357,6 +263,7 @@
     parser.xml = [NSString stringWithContentsOfURL:videoUrl encoding:NSUTF8StringEncoding error:nil];
     _videoData = [[NSMutableArray alloc]init];
     [_videoData addObjectsFromArray:[parser parseFeed]];
+    // Wow, app is making synchronous network calls.  Anyhow, currently recs is on-demand in the VC and not pre-loaded or saved beyond VC instance
 }
 
 @end

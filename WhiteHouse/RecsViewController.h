@@ -24,30 +24,18 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 //
-//  AppDelegate.h
+//  RecsViewController.h
 //  WhiteHouse
 //
 
-
 #import <UIKit/UIKit.h>
 
-@class SWRevealViewController;
+@interface RecsViewController : UIViewController <UITableViewDelegate, UITableViewDataSource, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout>
 
-@interface AppDelegate : UIResponder <UIApplicationDelegate>
-
-@property (strong, nonatomic) UIWindow *window;
-@property (strong, nonatomic) NSString *liveLink;
-@property (nonatomic, strong) NSArray *menuJSON;
-@property (nonatomic, strong) NSMutableArray *menuItems;
-@property (nonatomic, strong) NSString *activeFeed;
-@property (nonatomic, strong) NSString *liveFeed;
-@property (nonatomic, strong) NSMutableArray *blogData;
-@property (nonatomic, strong) NSMutableArray *briefingRoomData;
-@property (nonatomic, strong) NSMutableArray *videoData;
-@property (nonatomic, strong) NSMutableArray *photoData;
-@property (nonatomic, strong) NSMutableArray *placeholderImages;
-@property (nonatomic, strong) NSArray *livePosts;
-@property (readwrite, assign)  NSUInteger liveEventCount;
+@property (weak, nonatomic) IBOutlet UIBarButtonItem *sidebarButton;
+@property (weak, nonatomic) IBOutlet UITableView *tblBlogs;
+@property (weak, nonatomic) IBOutlet UICollectionView *collectBlogs;
+@property (weak, nonatomic) IBOutlet UICollectionView *collectBlogsPlus;
+@property (assign, nonatomic) int placeholderImageIndex;
 
 @end
-
