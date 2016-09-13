@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="10117" systemVersion="15G1004" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="uev-I3-cgm">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="9531" systemVersion="15G31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="uev-I3-cgm">
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9529"/>
         <capability name="Alignment constraints with different attributes" minToolsVersion="5.1"/>
+        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
@@ -1059,7 +1060,7 @@
                                 <rect key="frame" x="0.0" y="66" width="600" height="63"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="BAp-L9-m1S" id="lIP-Hd-BT5">
-                                    <rect key="frame" x="0.0" y="0.0" width="600" height="63"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="600" height="62.5"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="KB0-cf-8sU">
@@ -3853,6 +3854,19 @@
                                     </collectionViewCell>
                                 </cells>
                             </collectionView>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" misplaced="YES" image="loading-bg.png" translatesAutoresizingMaskIntoConstraints="NO" id="Wcc-A9-tRl" userLabel="loadingRecsView">
+                                <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="240" id="R07-My-JRi"/>
+                                    <constraint firstAttribute="width" secondItem="Wcc-A9-tRl" secondAttribute="height" multiplier="15:8" id="bYh-E3-qFI"/>
+                                </constraints>
+                                <variation key="default">
+                                    <mask key="constraints">
+                                        <exclude reference="R07-My-JRi"/>
+                                        <exclude reference="bYh-E3-qFI"/>
+                                    </mask>
+                                </variation>
+                            </imageView>
                         </subviews>
                         <color key="backgroundColor" red="0.90196078430000004" green="0.90196078430000004" blue="0.90196078430000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
@@ -3860,11 +3874,15 @@
                             <constraint firstItem="0Gm-j1-S1t" firstAttribute="top" secondItem="7Kk-vC-And" secondAttribute="bottom" id="AEP-qZ-TIv"/>
                             <constraint firstItem="1Ws-FA-5Vn" firstAttribute="top" secondItem="t6c-f9-Se8" secondAttribute="top" id="M3m-6h-4RS"/>
                             <constraint firstAttribute="trailingMargin" secondItem="bLS-N1-hBn" secondAttribute="trailing" constant="-16" id="Opx-nn-4A7"/>
+                            <constraint firstItem="Wcc-A9-tRl" firstAttribute="top" secondItem="t6c-f9-Se8" secondAttribute="top" id="V8A-3z-jaV"/>
                             <constraint firstItem="0Gm-j1-S1t" firstAttribute="top" secondItem="bLS-N1-hBn" secondAttribute="bottom" id="VXg-yb-rmF"/>
                             <constraint firstAttribute="trailing" secondItem="7Kk-vC-And" secondAttribute="trailing" id="Wd2-sf-0oz"/>
                             <constraint firstItem="bLS-N1-hBn" firstAttribute="leading" secondItem="t6c-f9-Se8" secondAttribute="leadingMargin" constant="-16" id="aoX-2N-7nq"/>
                             <constraint firstItem="1Ws-FA-5Vn" firstAttribute="leading" secondItem="t6c-f9-Se8" secondAttribute="leading" id="bLC-eN-Chg"/>
+                            <constraint firstItem="Wcc-A9-tRl" firstAttribute="trailing" secondItem="t6c-f9-Se8" secondAttribute="trailing" id="c4M-tP-Gny"/>
+                            <constraint firstItem="Wcc-A9-tRl" firstAttribute="leading" secondItem="t6c-f9-Se8" secondAttribute="leading" id="eGh-oC-arl"/>
                             <constraint firstItem="0Gm-j1-S1t" firstAttribute="top" secondItem="1Ws-FA-5Vn" secondAttribute="bottom" id="he8-c7-4WZ"/>
+                            <constraint firstItem="Wcc-A9-tRl" firstAttribute="bottom" secondItem="t6c-f9-Se8" secondAttribute="bottom" id="l6L-L4-IhV"/>
                             <constraint firstItem="bLS-N1-hBn" firstAttribute="top" secondItem="t6c-f9-Se8" secondAttribute="topMargin" id="qFf-6D-yii"/>
                             <constraint firstAttribute="trailing" secondItem="1Ws-FA-5Vn" secondAttribute="trailing" id="tUW-ds-khX"/>
                             <constraint firstItem="7Kk-vC-And" firstAttribute="top" secondItem="t6c-f9-Se8" secondAttribute="top" id="vlt-PZ-kMe"/>
@@ -3932,6 +3950,7 @@
                     <connections>
                         <outlet property="collectBlogs" destination="1Ws-FA-5Vn" id="7ya-ft-Gtf"/>
                         <outlet property="collectBlogsPlus" destination="bLS-N1-hBn" id="EQ9-Kb-JLh"/>
+                        <outlet property="loadingRecsView" destination="Wcc-A9-tRl" id="g17-p8-oIl"/>
                         <outlet property="sidebarButton" destination="uAa-I5-Lca" id="Bwt-Rg-rFL"/>
                         <outlet property="tblBlogs" destination="7Kk-vC-And" id="Cqy-7b-Yyq"/>
                         <segue destination="1He-tg-2qU" kind="show" identifier="showRecWebSegue" id="Vgn-k8-ZMZ"/>
@@ -3951,7 +3970,7 @@
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="5Ez-iI-88O"/>
-        <segue reference="x4F-Pn-hvO"/>
-        <segue reference="cER-k4-pTv"/>
+        <segue reference="Vgn-k8-ZMZ"/>
+        <segue reference="OgI-8D-pXH"/>
     </inferredMetricsTieBreakers>
 </document>

@@ -103,6 +103,7 @@ static const int CELLS_PER_ROW = 2;
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
+    [_loadingRecsView setHidden:NO];
     __weak typeof(self) weakSelf = self;
     [self.evergageScreen setCampaignHandler:^(EVGCampaign * _Nonnull campaign) {
         [weakSelf handleCampaign:campaign];
@@ -148,6 +149,7 @@ static const int CELLS_PER_ROW = 2;
     [_collectBlogsPlus reloadData];
     _placeholderImageIndex = 0;
     [self.refreshControl endRefreshing];
+    [_loadingRecsView setHidden:YES];
 }
 
 #pragma mark - Navigation
