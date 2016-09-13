@@ -4,7 +4,6 @@
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9529"/>
         <capability name="Alignment constraints with different attributes" minToolsVersion="5.1"/>
-        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
@@ -3854,18 +3853,8 @@
                                     </collectionViewCell>
                                 </cells>
                             </collectionView>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" misplaced="YES" image="loading-bg.png" translatesAutoresizingMaskIntoConstraints="NO" id="Wcc-A9-tRl" userLabel="loadingRecsView">
+                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" misplaced="YES" image="seal-bg.png" translatesAutoresizingMaskIntoConstraints="NO" id="Wcc-A9-tRl" userLabel="loadingRecsView">
                                 <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="240" id="R07-My-JRi"/>
-                                    <constraint firstAttribute="width" secondItem="Wcc-A9-tRl" secondAttribute="height" multiplier="15:8" id="bYh-E3-qFI"/>
-                                </constraints>
-                                <variation key="default">
-                                    <mask key="constraints">
-                                        <exclude reference="R07-My-JRi"/>
-                                        <exclude reference="bYh-E3-qFI"/>
-                                    </mask>
-                                </variation>
                             </imageView>
                         </subviews>
                         <color key="backgroundColor" red="0.90196078430000004" green="0.90196078430000004" blue="0.90196078430000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -3967,6 +3956,7 @@
         <image name="loading-bg.png" width="640" height="1136"/>
         <image name="menu.png" width="28" height="20"/>
         <image name="play.png" width="80" height="80"/>
+        <image name="seal-bg.png" width="640" height="1136"/>
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="5Ez-iI-88O"/>
