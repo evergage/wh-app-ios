@@ -33,11 +33,6 @@
     return @"gov.whitehouse.App";
 }
 
-- (NSString *)activityTitle
-{
-    return _activityTitle;
-}
-
 - (UIImage *)activityImage
 {
     // Note: These images need to have a transparent background and I recommend these sizes:
