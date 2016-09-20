@@ -82,9 +82,9 @@
 		C34787A01A68428100E0E293 /* Default-Landscape.png in Resources */ = {isa = PBXBuildFile; fileRef = C347879C1A68428100E0E293 /* Default-Landscape.png */; };
 		C34787A11A68428100E0E293 /* Default-Landscape@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C347879D1A68428100E0E293 /* Default-Landscape@2x.png */; };
 		C34787A21A68428100E0E293 /* Default-Portrait@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C347879E1A68428100E0E293 /* Default-Portrait@2x.png */; };
-		C34CAE6C1AA4B7F900F4FC7F /* feeds.json in Resources */ = {isa = PBXBuildFile; fileRef = C34CAE6B1AA4B7F900F4FC7F /* feeds.json */; };
 		C34E8B6D1A5C9CE50036AE2E /* play@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C34E8B6B1A5C9CE50036AE2E /* play@2x.png */; };
 		C34E8B6E1A5C9CE50036AE2E /* play.png in Resources */ = {isa = PBXBuildFile; fileRef = C34E8B6C1A5C9CE50036AE2E /* play.png */; };
+		F9352E101D907F8800AAB82C /* Util.m in Sources */ = {isa = PBXBuildFile; fileRef = F9352E0F1D907F8800AAB82C /* Util.m */; };
 		F9AD65451D86FD9700C1259C /* RecsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F9AD65441D86FD9700C1259C /* RecsViewController.m */; };
 /* End PBXBuildFile section */
 
@@ -112,8 +112,8 @@
 		496889D019E5B14700A6833A /* menu.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = menu.png; sourceTree = "<group>"; };
 		496889D619E5B6BA00A6833A /* MainViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainViewController.h; sourceTree = "<group>"; };
 		496889D719E5B6BA00A6833A /* MainViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MainViewController.m; sourceTree = "<group>"; };
-		496889DC19E5B9F200A6833A /* SidebarViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SidebarViewController.h; path = ../SidebarViewController.h; sourceTree = "<group>"; };
-		496889DD19E5B9F200A6833A /* SidebarViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SidebarViewController.m; path = ../SidebarViewController.m; sourceTree = "<group>"; };
+		496889DC19E5B9F200A6833A /* SidebarViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SidebarViewController.h; sourceTree = "<group>"; };
+		496889DD19E5B9F200A6833A /* SidebarViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SidebarViewController.m; sourceTree = "<group>"; };
 		496889E419E6A60F00A6833A /* BriefingRoomViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BriefingRoomViewController.h; sourceTree = "<group>"; };
 		496889E519E6A60F00A6833A /* BriefingRoomViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BriefingRoomViewController.m; sourceTree = "<group>"; };
 		496889EA19E6B14100A6833A /* SWRevealViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SWRevealViewController.h; sourceTree = "<group>"; };
@@ -144,8 +144,8 @@
 		499C9C0119E5ADF60054E900 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		499C9C0219E5ADF60054E900 /* WhiteHouseTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WhiteHouseTests.m; sourceTree = "<group>"; };
 		49A395E819F550EA001463BA /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
-		49A395EC19F7C095001463BA /* FavoritesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FavoritesViewController.h; path = ../FavoritesViewController.h; sourceTree = "<group>"; };
-		49A395ED19F7C095001463BA /* FavoritesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FavoritesViewController.m; path = ../FavoritesViewController.m; sourceTree = "<group>"; };
+		49A395EC19F7C095001463BA /* FavoritesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FavoritesViewController.h; sourceTree = "<group>"; };
+		49A395ED19F7C095001463BA /* FavoritesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FavoritesViewController.m; sourceTree = "<group>"; };
 		49ABB89419FFC42900D8EFA8 /* loading.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = loading.png; sourceTree = "<group>"; };
 		49ABB89819FFEC3200D8EFA8 /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
 		49ACD5AD1A1651090059A0E1 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
@@ -219,10 +219,11 @@
 		C347879C1A68428100E0E293 /* Default-Landscape.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-Landscape.png"; sourceTree = "<group>"; };
 		C347879D1A68428100E0E293 /* Default-Landscape@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-Landscape@2x.png"; sourceTree = "<group>"; };
 		C347879E1A68428100E0E293 /* Default-Portrait@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-Portrait@2x.png"; sourceTree = "<group>"; };
-		C34CAE6B1AA4B7F900F4FC7F /* feeds.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = feeds.json; sourceTree = "<group>"; };
 		C34E8B6B1A5C9CE50036AE2E /* play@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "play@2x.png"; sourceTree = "<group>"; };
 		C34E8B6C1A5C9CE50036AE2E /* play.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = play.png; sourceTree = "<group>"; };
 		C3EDE33C1A8E497D00480E2C /* Constants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Constants.h; sourceTree = "<group>"; };
+		F9352E0E1D907F8800AAB82C /* Util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Util.h; sourceTree = "<group>"; };
+		F9352E0F1D907F8800AAB82C /* Util.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Util.m; sourceTree = "<group>"; };
 		F9AD65431D86FD9700C1259C /* RecsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RecsViewController.h; sourceTree = "<group>"; };
 		F9AD65441D86FD9700C1259C /* RecsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RecsViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -327,9 +328,10 @@
 			isa = PBXGroup;
 			children = (
 				C3EDE33C1A8E497D00480E2C /* Constants.h */,
+				F9352E0E1D907F8800AAB82C /* Util.h */,
+				F9352E0F1D907F8800AAB82C /* Util.m */,
 				499C9BEA19E5ADF60054E900 /* AppDelegate.h */,
 				499C9BEB19E5ADF60054E900 /* AppDelegate.m */,
-				499C9BF019E5ADF60054E900 /* Main.storyboard */,
 				49CCCBCD1A252E1B0074EE6F /* PhotoViewController.h */,
 				49CCCBCE1A252E1B0074EE6F /* PhotoViewController.m */,
 				496889F619ED408200A6833A /* DetailViewController.h */,
@@ -351,6 +353,7 @@
 				F9AD65431D86FD9700C1259C /* RecsViewController.h */,
 				F9AD65441D86FD9700C1259C /* RecsViewController.m */,
 				499C9BF319E5ADF60054E900 /* Images.xcassets */,
+				499C9BF019E5ADF60054E900 /* Main.storyboard */,
 				499C9BF519E5ADF60054E900 /* LaunchScreen.xib */,
 				49EE8DAF19F1ACCF005F4DA0 /* ModelData */,
 				49EE8DAE19F1ACA2005F4DA0 /* CustomCells */,
@@ -376,7 +379,6 @@
 				496889D219E5B14B00A6833A /* images */,
 				499C9BE719E5ADF60054E900 /* Info.plist */,
 				499C9BE819E5ADF60054E900 /* main.m */,
-				C34CAE6B1AA4B7F900F4FC7F /* feeds.json */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -503,7 +505,6 @@
 				499C9BDF19E5ADF60054E900 /* Sources */,
 				499C9BE019E5ADF60054E900 /* Frameworks */,
 				499C9BE119E5ADF60054E900 /* Resources */,
-				DED2789FF08695253E3DBDB0 /* Upload Bugsnag dSYM */,
 				8C6D5CE05303FC415A613275 /* [CP] Embed Pods Frameworks */,
 				BF8A0168C6B479F9ADBBA02A /* [CP] Copy Pods Resources */,
 			);
@@ -545,7 +546,6 @@
 				TargetAttributes = {
 					499C9BE219E5ADF60054E900 = {
 						CreatedOnToolsVersion = 6.0.1;
-						DevelopmentTeam = 44G6DHJ722;
 						SystemCapabilities = {
 							com.apple.BackgroundModes = {
 								enabled = 1;
@@ -605,7 +605,6 @@
 				C34E8B6E1A5C9CE50036AE2E /* play.png in Resources */,
 				49ACD5D31A1A8C920059A0E1 /* youtube.html in Resources */,
 				499C9BF419E5ADF60054E900 /* Images.xcassets in Resources */,
-				C34CAE6C1AA4B7F900F4FC7F /* feeds.json in Resources */,
 				494683901A3B83B000353419 /* loading-bg.png in Resources */,
 				49CCCBDC1A30E8BF0074EE6F /* Default@2x.png in Resources */,
 				C34787A01A68428100E0E293 /* Default-Landscape.png in Resources */,
@@ -670,21 +669,6 @@
 			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
-		DED2789FF08695253E3DBDB0 /* Upload Bugsnag dSYM */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Upload Bugsnag dSYM";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /usr/bin/ruby;
-			shellScript = "\nif ENV[\"DEBUG_INFORMATION_FORMAT\"] != \"dwarf-with-dsym\" or ENV[\"PLATFORM_NAME\"] == \"iphonesimulator\"\n  exit\nend\n\nfork do\n  Process.setsid\n  STDIN.reopen(\"/dev/null\")\n  STDOUT.reopen(\"/dev/null\", \"a\")\n  STDERR.reopen(\"/dev/null\", \"a\")\n\n  require 'shellwords'\n\n  Dir[\"#{ENV[\"DWARF_DSYM_FOLDER_PATH\"]}/#{ENV[\"DWARF_DSYM_FILE_NAME\"]}/Contents/Resources/DWARF/*\"].each do |dsym|\n    system(\"curl -F dsym=@#{Shellwords.escape(dsym)} -F projectRoot=#{Shellwords.escape(ENV[\"PROJECT_DIR\"])} https://upload.bugsnag.com/\")\n  end\nend\n";
-			showEnvVarsInLog = 0;
-		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -709,6 +693,7 @@
 				49EE8D7319F015F3005F4DA0 /* AFURLConnectionOperation.m in Sources */,
 				49EE8D6F19F015F3005F4DA0 /* AFHTTPRequestOperationManager.m in Sources */,
 				499C9BE919E5ADF60054E900 /* main.m in Sources */,
+				F9352E101D907F8800AAB82C /* Util.m in Sources */,
 				49EE8D9619F1450F005F4DA0 /* RXMLElement.m in Sources */,
 				49EE8D7119F015F3005F4DA0 /* AFNetworkReachabilityManager.m in Sources */,
 				496889DE19E5B9F200A6833A /* SidebarViewController.m in Sources */,

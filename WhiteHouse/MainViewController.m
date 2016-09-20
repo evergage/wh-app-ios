@@ -41,30 +41,28 @@
 #import "Constants.h"
 
 @interface MainViewController ()
+@property (nonatomic, strong) AppDelegate *appDelegate;
 @property (nonatomic, strong) UIRefreshControl *refreshControl;
 @property (nonatomic, strong) NSArray *arrBlogData;
 @property (nonatomic, strong) NSArray *arrBlogDataUnsorted;
 @property (nonatomic, strong) NSIndexPath *colIndex;
 @property (nonatomic, assign) const float heightCon;
 @property (nonatomic, strong) UIView *baseView;
-
-
--(void)refreshData;
-
-
 @end
 
 @implementation MainViewController
 
-- (void)viewDidLoad
-{
+- (void)viewDidLoad {
     [super viewDidLoad];
+    
+    self.appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
     
     UIColor *blue = [UIColor colorWithRed:0.0 green:0.2 blue:0.4 alpha:1.0];
     [[UINavigationBar appearance] setBarTintColor:blue];
     
     self.title = @"Blog";
     
+    // todo: not removed!
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(appDidBecomeActive:) name:UIApplicationDidBecomeActiveNotification object:nil];
     
     // Set the side bar button action. When it's tapped, it'll show up the sidebar.
@@ -102,7 +100,6 @@
     [_collectBlogsPlus setBackgroundColor:[UIColor colorWithRed:0.9 green:0.9 blue:0.9 alpha:1.0]];
     [_collectBlogs setBackgroundColor:[UIColor colorWithRed:0.9 green:0.9 blue:0.9 alpha:1.0]];
     self.edgesForExtendedLayout = UIRectEdgeNone;
-    _placeholderImageIndex = 0;
 }
 
 -(IBAction)viewEvent{
@@ -116,49 +113,41 @@
     [self createBanner];
     [self refreshData];
 }
+
 - (void) viewDidAppear:(BOOL)animated{
     [super viewDidAppear:animated];
     [_tblBlogs reloadData];
     [_collectBlogs reloadData];
-    _placeholderImageIndex = 0;
 }
 
 - (void)appDidBecomeActive:(NSNotification *)notification {
-    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-    _liveLink = appDelegate.liveLink;
-    if(_liveLink){
+    self.liveLink = self.appDelegate.liveLink;
+    if (self.liveLink) {
         [self performSegueWithIdentifier:@"showWebView" sender:self];
     }
 }
 
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-}
-
 
 -(void)hardRefresh{
-    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-    [appDelegate.blogData removeAllObjects];
+    [self.appDelegate.blogData removeAllObjects];
     [self refreshData];
 }
 
 -(void)refreshData{
-    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     DOMParser * parser = [[DOMParser alloc] init];
     NSArray * posts;
     NSArray * sectionedPosts;
-    if(appDelegate.blogData.count > 0){
-        _arrBlogDataUnsorted = appDelegate.blogData;
-        sectionedPosts = [parser sectionPosts:appDelegate.blogData];
+    if(self.appDelegate.blogData.count > 0){
+        _arrBlogDataUnsorted = self.appDelegate.blogData;
+        sectionedPosts = [parser sectionPosts:self.appDelegate.blogData];
     }else{
-    NSLog(@"%@", appDelegate.activeFeed);
-        NSURL *url = [[NSURL alloc] initWithString:appDelegate.activeFeed];
+    NSLog(@"%@", self.appDelegate.activeFeed);
+        NSURL *url = [[NSURL alloc] initWithString:self.appDelegate.activeFeed];
         parser.xml = [NSString stringWithContentsOfURL:url encoding:NSUTF8StringEncoding error:nil];
         posts = [parser parseFeed];
         _arrBlogDataUnsorted = posts;
         sectionedPosts = [parser sectionPosts:posts];
-        appDelegate.blogData = [[NSMutableArray alloc] initWithArray:posts];
+        self.appDelegate.blogData = [[NSMutableArray alloc] initWithArray:posts];
     }
     [self performNewFetchedDataActionsWithDataArray:sectionedPosts];
     [self.refreshControl endRefreshing];
@@ -172,53 +161,50 @@
     [_tblBlogs reloadData];
     [_collectBlogs reloadData];
     [_collectBlogsPlus reloadData];
-    _placeholderImageIndex = 0;
 }
 
-#pragma mark - Table view data source
+#pragma mark - Table View
 
--(NSInteger)numberOfSectionsInTableView:(UITableView *)tableView{
-    return _arrBlogData.count;
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+    return self.arrBlogData.count;
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
-    NSArray *posts = _arrBlogData[section];
+    NSArray *posts = self.arrBlogData[section];
     Post *post = [posts firstObject];
     return [Post todayYesterdayOrDate:post.pubDate];
 }
 
--(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
-    NSArray *posts = _arrBlogData[section];
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    NSArray *posts = self.arrBlogData[section];
     return posts.count;
 }
 
-
--(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
-    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-    UITableViewCell *cell = nil;
-    NSArray *set = [_arrBlogData objectAtIndex:indexPath.section];
-    Post *post = [set objectAtIndex:indexPath.row];
-    PostTableCell *blogCell;
-    if ([NSURL URLWithString:post.iPhoneThumbnail]){
-        cell = [tableView dequeueReusableCellWithIdentifier:@"BlogCell" forIndexPath:indexPath];
-        blogCell = (PostTableCell *)cell;
-        [blogCell.backgroundImage setImageWithURL:[NSURL URLWithString:post.iPadThumbnail] placeholderImage: appDelegate.placeholderImages[_placeholderImageIndex]];
-        (_placeholderImageIndex == 3) ? _placeholderImageIndex = 0 : _placeholderImageIndex++;
-    }else{
-        cell = [tableView dequeueReusableCellWithIdentifier:@"BlogCellNoImage" forIndexPath:indexPath];
-        blogCell = (PostTableCell *)cell;
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    Post *post = nil;
+    if (indexPath.section < self.arrBlogData.count) {
+        NSArray<Post *> *postsForSection = self.arrBlogData[indexPath.section];
+        if (indexPath.row < postsForSection.count) post = postsForSection[indexPath.row];
     }
-    blogCell.titleLabel.text = post.title;
-    blogCell.dateLabel.text = post.getTime;
-    blogCell.card.layer.shadowColor = [UIColor blackColor].CGColor;
-    blogCell.card.layer.shadowRadius = 1;
-    blogCell.card.layer.shadowOpacity = 0.2;
-    blogCell.card.layer.shadowOffset = CGSizeMake(0.2, 2);
-    blogCell.card.layer.masksToBounds = NO;
     
-    [cell setBackgroundColor:[UIColor colorWithRed:0.9 green:0.9 blue:0.9 alpha:1.0]];
+    PostTableCell *cell;
+    NSURL *imageURL = [NSURL URLWithString:post.iPadThumbnail];
+    if (imageURL) {
+        cell = (PostTableCell *)[tableView dequeueReusableCellWithIdentifier:@"BlogCell" forIndexPath:indexPath];
+        [cell.backgroundImage setImageWithURL:imageURL placeholderImage:[self.appDelegate placeholderImageForIndexPath:indexPath]];
+    } else {
+        cell = (PostTableCell *)[tableView dequeueReusableCellWithIdentifier:@"BlogCellNoImage" forIndexPath:indexPath];
+    }
+    
+    cell.titleLabel.text = post.title;
+    cell.dateLabel.text = post.getTime;
+    cell.card.layer.shadowColor = [UIColor blackColor].CGColor;
+    cell.card.layer.shadowRadius = 1;
+    cell.card.layer.shadowOpacity = 0.2;
+    cell.card.layer.shadowOffset = CGSizeMake(0.2, 2);
+    cell.card.layer.masksToBounds = NO;
+    cell.backgroundColor = [UIColor colorWithRed:0.9 green:0.9 blue:0.9 alpha:1.0];
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
-
     return cell;
 }
 
@@ -249,39 +235,29 @@
     }
 }
 
-#pragma mark - collection view data source
+#pragma mark - Collection View
 
-- (NSInteger) collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
-{
-    return _arrBlogDataUnsorted.count;
+- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
+    return self.arrBlogDataUnsorted.count;
 }
 
-- (NSInteger)numberOfSectionsInCollectionView: (UICollectionView *)collectionView {
-    return 1;
-}
-
-- (UICollectionViewCell *) collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
-{
-    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-    UICollectionViewCell *cell = nil;
-    PostCollectionCell *postCell;
-    cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"BlogColCell" forIndexPath:indexPath];
-    postCell = (PostCollectionCell *)cell;
+- (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
+    Post *post = nil;
+    if (indexPath.row < self.arrBlogDataUnsorted.count) post = self.arrBlogDataUnsorted[indexPath.row];
     
-    //The following conditional was added due to the periodic error: NSArrayM objectAtIndex:]: index 0 beyond bounds for empty array
-    if (_arrBlogDataUnsorted.count > indexPath.row) {
-        Post *post = [_arrBlogDataUnsorted objectAtIndex:indexPath.row];
-        postCell.titleLabel.text = post.title;
-        postCell.dateLabel.text = [NSString stringWithFormat:@"%@ - %@", post.getDate, post.getTime];
-        [postCell.backgroundImage setImageWithURL:[NSURL URLWithString:post.iPadThumbnail] placeholderImage: appDelegate.placeholderImages[_placeholderImageIndex]];
-        (_placeholderImageIndex == 3) ? _placeholderImageIndex = 0 : _placeholderImageIndex++;
+    PostCollectionCell *cell;
+    NSURL *imageURL = [NSURL URLWithString:post.iPadThumbnail];
+    if (imageURL) {
+        cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"BlogColCell" forIndexPath:indexPath];
+        [cell.backgroundImage setImageWithURL:imageURL placeholderImage:[self.appDelegate placeholderImageForIndexPath:indexPath]];
+        cell.descriptionLabel.text = nil;
+    } else {
+        cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"BlogColCellNoImage" forIndexPath:indexPath];
+        cell.descriptionLabel.text = [Post stringByStrippingHTML:post.pageDescription];
     }
-    else {
-        postCell.titleLabel.text = @"No Blog data found";
-        postCell.dateLabel.text = @"";
-    }
-
-
+    
+    cell.titleLabel.text = post.title;
+    cell.dateLabel.text = post ? [NSString stringWithFormat:@"%@ - %@", post.getDate, post.getTime] : @"";
     cell.layer.shadowColor = [UIColor blackColor].CGColor;
     cell.layer.shadowRadius = 1;
     cell.layer.shadowOpacity = 0.2;
@@ -330,28 +306,24 @@ minimumLineSpacingForSectionAtIndex:(NSInteger)section{
     return 25;
 }
 
--(void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
-{
+- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
     [_tblBlogs reloadData];
     [_collectBlogs reloadData];
     [_collectBlogsPlus reloadData];
-    _placeholderImageIndex = 0;
 }
 
-- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
-{
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
     [_collectBlogsPlus performBatchUpdates:nil completion:nil];
     [_collectBlogs performBatchUpdates:nil completion:nil];
     [self createBanner];
 }
 
 # pragma live event Banner
--(void)createBanner{
+- (void)createBanner {
     [self.baseView removeFromSuperview];
-    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-    if(appDelegate.livePosts){
+    if (self.appDelegate.livePosts) {
         NSMutableArray *happeningNow = [[NSMutableArray alloc]init];
-        for (NSDictionary *d in appDelegate.livePosts) {
+        for (NSDictionary *d in self.appDelegate.livePosts) {
             Post *post = [Post postFromDictionary:d];
             NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
             formatter.dateFormat = @"EEE, dd MMM yyyy HH:mm:ss ZZZ";

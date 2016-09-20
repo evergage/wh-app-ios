@@ -34,10 +34,10 @@
 #import "Post.h"
 #import "PostTableCell.h"
 #import "AppDelegate.h"
-#import "ActivityViewCustomActivity.h"
 #import "FavoritesViewController.h"
 #import "WebViewController.h"
 #import "RecsViewController.h"
+#import "Constants.h"
 #import <Evergage/Evergage.h>
 
 @interface SidebarViewController ()
@@ -46,8 +46,6 @@
 @end
 
 @implementation SidebarViewController
-
-#define IS_IOS_8_OR_LATER ([[[UIDevice currentDevice] systemVersion] floatValue] >= 8.0)
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -59,9 +57,9 @@
     self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
     self.tableView.backgroundView = tempImageView;
     
-    _appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    self.appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
     
-    [_searchBar setDelegate:self];
+    [self.searchBar setDelegate:self];
     [self.tableView setContentInset:UIEdgeInsetsMake(150,0,0,0)];
     self.tableView.scrollEnabled = NO;
     
@@ -89,25 +87,16 @@
     [center addObserver:self selector:@selector(keyboardDidShow:) name:UIKeyboardDidShowNotification object:nil];
 }
 
-- (void) viewDidAppear:(BOOL)animated  {
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
     [self.navTableView reloadData];
 }
 
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-}
 
-#pragma mark - Table view data source
-
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
-{
-    // Return the number of sections.
-    return 1;
-}
+#pragma mark - Table View
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    if (![tableView isEqual:_navTableView]) {
+    if (![tableView isEqual:self.navTableView]) {
         return self.searchResults.count;
     } else if (self.appDelegate.useEvergageRecs) {
         return self.appDelegate.menuItems.count;
@@ -116,76 +105,76 @@
     }
 }
 
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
-{
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     UITableViewCell *cell = nil;
-    if ([tableView isEqual:_navTableView]) {
+    if ([tableView isEqual:self.navTableView]) {
+        // Manu table
         cell = [tableView dequeueReusableCellWithIdentifier:@"navCell" forIndexPath:indexPath];
         PostTableCell *navCell = (PostTableCell *)cell;
-        navCell.titleLabel.text = [[self.appDelegate.menuItems objectAtIndex:indexPath.row] objectForKey:@"title"];
-        if (indexPath.row == 4){
-            NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-            NSString *docDirectory = [paths objectAtIndex:0];
-            NSString *dataFilePath = [docDirectory stringByAppendingPathComponent:@"livedata"];
-            NSArray *dictsFromFile = [[NSArray alloc]init];
-            if ([[NSFileManager defaultManager] fileExistsAtPath:dataFilePath]) {
-                dictsFromFile = [NSArray arrayWithContentsOfFile:dataFilePath];
-            }
-
-            navCell.dateLabel.text = [NSString stringWithFormat:@"%ld", (unsigned long)dictsFromFile.count];
+        NSDictionary *menuItem = nil;
+        if (indexPath.row < self.appDelegate.menuItems.count) menuItem = self.appDelegate.menuItems[indexPath.row];
+        
+        navCell.titleLabel.text = menuItem[@"title"];
+        navCell.dateLabel.hidden = YES;
+        if ([@"live" isEqual:menuItem[@"view-type"]]) {
+            navCell.dateLabel.text = [NSString stringWithFormat:@"%ld", (unsigned long)self.appDelegate.livePosts.count];
             navCell.dateLabel.layer.cornerRadius = 8;
             navCell.dateLabel.layer.masksToBounds = YES;
-        }else{
-            [navCell.dateLabel setHidden:YES];
+            navCell.dateLabel.hidden = NO;
         }
         navCell.titleLabel.highlightedTextColor = [UIColor blackColor];
-    }
-    
-    else { // tableView == _secondTable
-        static NSString *CellIdentifier = @"Cell";
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
-        if (indexPath.row < _searchResults.count ){
-            NSString *key = self.appDelegate.useEvergageRecs ? @"name" : @"title";
-            NSData *data = [[[_searchResults objectAtIndex:indexPath.row] objectForKey:key] dataUsingEncoding:NSASCIIStringEncoding allowLossyConversion:YES];
-            NSString *cleanString = [[NSString alloc] initWithData:data encoding:NSASCIIStringEncoding];
-            NSError *error = nil;
-            NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"\\?" options:NSRegularExpressionCaseInsensitive error:&error];
-            NSString *cleanerString = [regex stringByReplacingMatchesInString:cleanString options:0 range:NSMakeRange(0, [cleanString length]) withTemplate:@""];
-            cell.textLabel.numberOfLines = 0;
-            cell.textLabel.text = cleanerString;
-        }
+    } else {
+        // Search results table
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"searchCell"];
+        NSDictionary *searchItem = nil;
+        if (indexPath.row < self.searchResults.count) searchItem = self.searchResults[indexPath.row];
+        
+        NSString *text = nil;
+        NSString *key = self.appDelegate.useEvergageRecs ? @"name" : @"title";
+        NSData *data = [searchItem[key] dataUsingEncoding:NSASCIIStringEncoding allowLossyConversion:YES];
+        if (data) text = [[NSString alloc] initWithData:data encoding:NSASCIIStringEncoding];
+        NSError *error = nil;
+        NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"\\?" options:NSRegularExpressionCaseInsensitive error:&error];
+        if (text) text = [regex stringByReplacingMatchesInString:text options:0 range:NSMakeRange(0, text.length) withTemplate:@""];
+        cell.textLabel.numberOfLines = 0;
+        cell.textLabel.text = text;
     }
     cell.backgroundColor = [UIColor clearColor];
     cell.textLabel.textColor = [UIColor whiteColor];
     return cell;
 }
 
-- (void) prepareForSegue: (UIStoryboardSegue *) segue sender: (id) sender
-{
-    if([segue.identifier isEqualToString:@"SearchDetail"]){
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+    UINavigationController *newFrontController;
+    if([segue.identifier isEqualToString:@"SearchDetail"]) {
+        // todo: how are both if/else using same self.tableView?  wouldn't it equal the nav/menu table view?  or whichever was selected/clicked?!
         NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
         WebViewController *destViewController = (WebViewController*)segue.destinationViewController;
-        NSString *key = self.appDelegate.useEvergageRecs ? @"url" : @"unescapedUrl";
-        destViewController.title = [[_searchResults objectAtIndex:indexPath.row] objectForKey:key];
-        SWRevealViewController *revealController = self.revealViewController;
-        UINavigationController *newFrontController = [[UINavigationController alloc] initWithRootViewController:destViewController];
-        [revealController pushFrontViewController:newFrontController animated:YES];
-    }else{
-        NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
-        UINavigationController *destViewController = (UINavigationController*)segue.destinationViewController;
-        destViewController.title = [[self.appDelegate.menuItems objectAtIndex:indexPath.row] objectForKey:@"title"];
-        AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-        appDelegate.activeFeed = [[self.appDelegate.menuItems objectAtIndex:indexPath.row] objectForKey:@"feed-url"];
+        NSDictionary *searchItem = nil;
+        if (indexPath.row < self.searchResults.count) searchItem = self.searchResults[indexPath.row];
         
-        SWRevealViewController *revealController = self.revealViewController;
-        UINavigationController *newFrontController = [[UINavigationController alloc] initWithRootViewController:destViewController];
-        [revealController pushFrontViewController:newFrontController animated:YES];
+        NSString *key = self.appDelegate.useEvergageRecs ? @"url" : @"unescapedUrl";
+        destViewController.title = searchItem[key];
+        newFrontController = [[UINavigationController alloc] initWithRootViewController:destViewController];
+    } else {
+        NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
+        UIViewController *destViewController = segue.destinationViewController;
+        NSDictionary *menuItem = nil;
+        if (indexPath.row < self.appDelegate.menuItems.count) menuItem = self.appDelegate.menuItems[indexPath.row];
+        
+        destViewController.title = menuItem[@"title"];
+        // todo: instead pass this on to child, once common base class?
+        self.appDelegate.activeFeed = menuItem[@"feed-url"];
+        
+        newFrontController = [[UINavigationController alloc] initWithRootViewController:destViewController];
     }
-    
+    [self.revealViewController pushFrontViewController:newFrontController animated:YES];
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    if([tableView isEqual:_navTableView]) {
+    if([tableView isEqual:self.navTableView]) {
+        // todo: instead base off meta (title,view-type) and pass feed-url in perform
+        //if blogs & briefs both view-type "article-list" then should have same segue to same VC
             switch ([[self.tableView indexPathForSelectedRow]row]) {
                 case 0: {
                     [self performSegueWithIdentifier:@"BlogSegue" sender:self];
@@ -227,7 +216,7 @@
                 }
             }
         [self.revealViewController setFrontViewPosition:FrontViewPositionLeft];
-    } else if ([tableView isEqual:_searchTableView]) {
+    } else if ([tableView isEqual:self.searchTableView]) {
         [self performSegueWithIdentifier:@"SearchDetail" sender:self];
     }
 }

@@ -24,18 +24,17 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 //
-//  BriefingRoomViewController.h
+//  Util.h
 //  WhiteHouse
+//
 
-#import <UIKit/UIKit.h>
-#import "SWRevealViewController.h"
-#import "DetailViewController.h"
-#import "DOMParser.h"
-#import "PostTableCell.h"
-#import "Post.h"
+#import <Foundation/Foundation.h>
 
-@interface BriefingRoomViewController : UIViewController <UITableViewDelegate, UITableViewDataSource>
-@property (weak, nonatomic) IBOutlet UIBarButtonItem *sidebarButton;
-@property (weak, nonatomic) IBOutlet UITableView *tblBlogs;
-@property (weak, nonatomic) IBOutlet UIView *loadingView;
+@interface Util : NSObject
+
+// todo: should use these most everywhere, new ones being created all over the place and not specifying POSIX etc
+// NSDateFormatters re-used and should be called from same thread (main)
++ (nullable NSDate *)dateFromFeedDateString:(nullable NSString *)dateString;
++ (nullable NSString *)userVisibleShortStringForDate:(nullable NSDate *)date;
+
 @end

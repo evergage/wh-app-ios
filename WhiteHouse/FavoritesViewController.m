@@ -85,7 +85,6 @@ BOOL alertShowing = NO;
 
 -(void)viewWillAppear:(BOOL)animated{
     [super viewWillAppear:true];
-     _placeholderImageIndex = 0;
     [self refreshData];
 }
 
@@ -197,52 +196,43 @@ BOOL alertShowing = NO;
     return found;
 }
 
-#pragma mark - Table view data source
+#pragma mark - Table View
 
--(NSInteger)numberOfSectionsInTableView:(UITableView *)tableView{
-    return 1;
-}
-
--(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     return self.favorites.count;
 }
 
 
--(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
-    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-    UITableViewCell *cell = nil;
-    Post *post = [_favorites objectAtIndex:indexPath.row];
-    PostTableCell *blogCell;
-    if(post.video){
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    AppDelegate *appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
+    
+    Post *post = nil;
+    if (indexPath.row < self.favorites.count) post = self.favorites[indexPath.row];
+    
+    PostTableCell *cell = nil;
+    if (post.video) {
         cell = [tableView dequeueReusableCellWithIdentifier:@"VideoCell" forIndexPath:indexPath];
-        PostCollectionCell *blogCell = (PostCollectionCell *)cell;
-        [blogCell.backgroundImage setImageWithURL:[NSURL URLWithString:post.iPadThumbnail] placeholderImage:[UIImage imageNamed:@"WH_logo_3D_CMYK.png"]];
-        blogCell.titleLabel.text = post.title;
-        blogCell.dateLabel.text = [NSString stringWithFormat:@"%@ - %@", post.getDate, post.getTime];
-    }else if (post.iPadThumbnail){
+        [cell.backgroundImage setImageWithURL:[NSURL URLWithString:post.iPadThumbnail] placeholderImage:[UIImage imageNamed:@"WH_logo_3D_CMYK.png"]];
+    } else if (post.iPadThumbnail) {
         cell = [tableView dequeueReusableCellWithIdentifier:@"BlogCell" forIndexPath:indexPath];
-        blogCell = (PostTableCell *)cell;
-        [blogCell.backgroundImage setImageWithURL:[NSURL URLWithString:post.iPadThumbnail] placeholderImage: appDelegate.placeholderImages[_placeholderImageIndex]];
-        (_placeholderImageIndex == 3) ? _placeholderImageIndex = 0 : _placeholderImageIndex++;
-        blogCell.titleLabel.text = post.title;
-        blogCell.dateLabel.text = [NSString stringWithFormat:@"%@ - %@", post.getDate, post.getTime];
-    }else{
+        [cell.backgroundImage setImageWithURL:[NSURL URLWithString:post.iPadThumbnail] placeholderImage:[appDelegate placeholderImageForIndexPath:indexPath]];
+    } else {
         cell = [tableView dequeueReusableCellWithIdentifier:@"BlogCellNoImage" forIndexPath:indexPath];
-        blogCell = (PostTableCell *)cell;
-        blogCell.titleLabel.text = post.title;
-        blogCell.dateLabel.text = [NSString stringWithFormat:@"%@ - %@", post.getDate, post.getTime];
     }
+    
+    cell.titleLabel.text = post.title;
+    cell.dateLabel.text = post ? [NSString stringWithFormat:@"%@ - %@", post.getDate, post.getTime] : nil;
     
     UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(showActionSheet:)];
     [cell addGestureRecognizer:longPress];
     
-    blogCell.card.layer.shadowColor = [UIColor blackColor].CGColor;
-    blogCell.card.layer.shadowRadius = 1;
-    blogCell.card.layer.shadowOpacity = 0.2;
-    blogCell.card.layer.shadowOffset = CGSizeMake(0.2, 2);
-    blogCell.card.layer.masksToBounds = NO;
+    cell.card.layer.shadowColor = [UIColor blackColor].CGColor;
+    cell.card.layer.shadowRadius = 1;
+    cell.card.layer.shadowOpacity = 0.2;
+    cell.card.layer.shadowOffset = CGSizeMake(0.2, 2);
+    cell.card.layer.masksToBounds = NO;
     
-    [cell setBackgroundColor:[UIColor colorWithRed:0.9 green:0.9 blue:0.9 alpha:1.0]];
+    cell.backgroundColor = [UIColor colorWithRed:0.9 green:0.9 blue:0.9 alpha:1.0];
     
     return cell;
 }
@@ -292,48 +282,44 @@ BOOL alertShowing = NO;
     destViewController.post = post;
 }
 
-#pragma mark - collection view data source
+#pragma mark - Collection View
 
-- (NSInteger) collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
-{
+- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
     if (IS_IPAD || IS_IPHONE_6P)
-        return _favorites.count;
+        return self.favorites.count;
     else
         return 0;
 }
-
-- (NSInteger)numberOfSectionsInCollectionView: (UICollectionView *)collectionView {
+// todo: why choosing to not render on others?
+- (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView {
     if (IS_IPAD || IS_IPHONE_6P)
         return 1;
     else
         return 0;
 }
 
-- (UICollectionViewCell *) collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
-{
+- (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-    UICollectionViewCell *cell = nil;
-    Post *post = [_favorites objectAtIndex:indexPath.row];
-    if(post.video){
+    
+    Post *post = nil;
+    if (indexPath.row < self.favorites.count) post = self.favorites[indexPath.row];
+    
+    PostCollectionCell *cell = nil;
+    if(post.video) {
         cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"VideoColCell" forIndexPath:indexPath];
-        PostCollectionCell *blogCell = (PostCollectionCell *)cell;
-        [blogCell.backgroundImage setImageWithURL:[NSURL URLWithString:post.iPadThumbnail] placeholderImage:[UIImage imageNamed:@"WH_logo_3D_CMYK.png"]];
-        blogCell.titleLabel.text = post.title;
-        blogCell.dateLabel.text = [NSString stringWithFormat:@"%@ - %@", post.getDate, post.getTime];
-    }else if (post.iPadThumbnail){
+        [cell.backgroundImage setImageWithURL:[NSURL URLWithString:post.iPadThumbnail] placeholderImage:[UIImage imageNamed:@"WH_logo_3D_CMYK.png"]];
+        cell.descriptionLabel.text = nil;
+    } else if (post.iPadThumbnail || !post.pageDescription.length) {
         cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"BlogColCell" forIndexPath:indexPath];
-        PostCollectionCell *blogCell = (PostCollectionCell *)cell;
-        [blogCell.backgroundImage setImageWithURL:[NSURL URLWithString:post.iPadThumbnail] placeholderImage:appDelegate.placeholderImages[_placeholderImageIndex]];
-        (_placeholderImageIndex == 3) ? _placeholderImageIndex = 0 : _placeholderImageIndex++;
-        blogCell.titleLabel.text = post.title;
-        blogCell.dateLabel.text = [NSString stringWithFormat:@"%@ - %@", post.getDate, post.getTime];
-    }else{
+        [cell.backgroundImage setImageWithURL:[NSURL URLWithString:post.iPadThumbnail] placeholderImage:[appDelegate placeholderImageForIndexPath:indexPath]];
+        cell.descriptionLabel.text = nil;
+    } else {
         cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"BlogColCellNoImage" forIndexPath:indexPath];
-        PostCollectionCell *blogCell = (PostCollectionCell *)cell;
-        blogCell.titleLabel.text = post.title;
-        blogCell.dateLabel.text = [NSString stringWithFormat:@"%@ - %@", post.getDate, post.getTime];
-        blogCell.descriptionLabel.text = [Post stringByStrippingHTML:post.pageDescription];
+        cell.descriptionLabel.text = [Post stringByStrippingHTML:post.pageDescription];
     }
+    
+    cell.titleLabel.text = post.title;
+    cell.dateLabel.text = post ? [NSString stringWithFormat:@"%@ - %@", post.getDate, post.getTime] : nil;
     
     UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(showActionSheet:)];
     [cell addGestureRecognizer:longPress];
@@ -447,17 +433,18 @@ minimumLineSpacingForSectionAtIndex:(NSInteger)section{
 }
 
 - (NSUInteger)numberOfPhotosInPhotoBrowser:(MWPhotoBrowser *)photoBrowser {
-    return _favorites.count;
+    return self.photos.count;
 }
 
 - (id <MWPhoto>)photoBrowser:(MWPhotoBrowser *)photoBrowser photoAtIndex:(NSUInteger)index {
-    if (index < _photos.count)
-        return [_photos objectAtIndex:index];
+    if (index < self.photos.count)
+        return self.photos[index];
     return nil;
 }
+
 - (id <MWPhoto>)photoBrowser:(MWPhotoBrowser *)photoBrowser thumbPhotoAtIndex:(NSUInteger)index {
-    if (index < _photos.count)
-        return [_photos objectAtIndex:index];
+    if (index < self.photos.count)
+        return self.photos[index];
     return nil;
 }
 

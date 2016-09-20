@@ -39,5 +39,5 @@
 @property (nonatomic, strong) NSArray *searchResults;
 @property(nonatomic,strong)NSString *activeFeed;
 
--(void)presentLive;
+- (void)presentLive;
 @end

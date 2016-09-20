@@ -36,8 +36,6 @@
 @property (strong, nonatomic) IBOutlet UITableView *tblNews;
 @property (strong, nonatomic) IBOutlet UIView *noLiveEventsView;
 
--(void)fetchNewDataWithCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler;
--(void)fetchLiveData;
--(NSString*)parseString;
+- (void)fetchNewDataWithCompletionHandler:(nullable void (^)(UIBackgroundFetchResult))completionHandler;
 
 @end

@@ -34,9 +34,6 @@
 #import "PostCollectionCell.h"
 #import "UIKit+AFNetworking.h"
 #import "ActivityViewCustomActivity.h"
-#import "GAI.h"
-#import "GAIFields.h"
-#import "GAIDictionaryBuilder.h"
 #import "LiveViewController.h"
 #import "Constants.h"
 
@@ -49,13 +46,8 @@
 
 @implementation PhotoViewController
 
-static NSString * const reuseIdentifier = @"Cell";
-
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
-    // Register cell classes
-    [self.collectionView registerClass:[UICollectionViewCell class] forCellWithReuseIdentifier:reuseIdentifier];
     
     _sidebarButton.target = self.revealViewController;
     _sidebarButton.action = @selector(revealToggle:);
@@ -72,12 +64,8 @@ static NSString * const reuseIdentifier = @"Cell";
     [self createBanner];
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
-
-- (void) viewWillAppear:(BOOL)animated{
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
     if (_baseView.superview)
         _baseView.hidden = FALSE;
 }
@@ -114,7 +102,7 @@ static NSString * const reuseIdentifier = @"Cell";
     [self performNewFetchedDataActionsWithDataArray:_photos];
 }
 
--(void)performNewFetchedDataActionsWithDataArray:(NSArray *)dataArray{
+- (void)performNewFetchedDataActionsWithDataArray:(NSArray *)dataArray {
     if (self.photos != nil) {
         self.photos = nil;
     }
@@ -124,32 +112,29 @@ static NSString * const reuseIdentifier = @"Cell";
 
 #pragma mark <UICollectionViewDataSource>
 
-- (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView {
-    return 1;
-}
-
-
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
-    return _photos.count;
+    return self.photos.count;
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
-    Post *post = [_photos objectAtIndex:indexPath.row];
-    NSString *image;
+    Post *post = nil;
+    if (indexPath.row < self.photos.count) post = self.photos[indexPath.row];
+    
+    NSString *imageUrlString;
     if ([[UIScreen mainScreen] respondsToSelector:@selector(displayLinkWithTarget:selector:)] &&
         ([UIScreen mainScreen].scale == 2.0)) {
-        image = post.iPadThumbnail;
+        imageUrlString = post.iPadThumbnail;
     } else {
-        image = post.collectionThumbnail;
+        imageUrlString = post.collectionThumbnail;
     }
-    UICollectionViewCell *cell = nil;
-    cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"PhotoCell" forIndexPath:indexPath];
-    PostCollectionCell *postCell = (PostCollectionCell *)cell;
-    [postCell.backgroundImage setImageWithURL:[NSURL URLWithString:post.collectionThumbnail] placeholderImage:[UIImage imageNamed:@"WH_logo_3D_CMYK.png"]];
+    
+    PostCollectionCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"PhotoCell" forIndexPath:indexPath];
+    [cell.backgroundImage setImageWithURL:[NSURL URLWithString:imageUrlString] placeholderImage:[UIImage imageNamed:@"WH_logo_3D_CMYK.png"]];
+    cell.descriptionLabel = nil;
     return cell;
 }
 
-- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath{
+- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
     _baseView.hidden = YES;
     MWPhotoBrowser *browser = [[MWPhotoBrowser alloc] initWithDelegate:self];
     browser.displayActionButton = YES; // Show action button to allow sharing, copying, etc (defaults to YES)
@@ -161,14 +146,6 @@ static NSString * const reuseIdentifier = @"Cell";
     browser.startOnGrid = NO; // Whether to start on the grid of thumbnails instead of the first photo (defaults to NO)
     [browser setCurrentPhotoIndex:indexPath.row];
     [self.navigationController pushViewController:browser animated:YES];
-    
-    NSString *photoUrl = [[_photos objectAtIndex:indexPath.row] link];
-//    id<GAITracker> tracker = [[GAI sharedInstance] defaultTracker];
-//    
-//    [tracker send:[[GAIDictionaryBuilder createEventWithCategory:@"photoLoaded"     // Event category (required)
-//                                                          action:@"button_press"  // Event action (required)
-//                                                           label: photoUrl         // Event label
-//                                                           value:nil] build]];    // Event value
 }
 
 #pragma mark <UICollectionViewDelegate>

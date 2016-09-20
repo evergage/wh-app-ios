@@ -156,7 +156,7 @@
     Post *post = [set objectAtIndex:indexPath.row];
     cell = [tableView dequeueReusableCellWithIdentifier:@"VideoCell" forIndexPath:indexPath];
     PostTableCell *videoCell = (PostTableCell *)cell;
-    [videoCell.backgroundImage setImageWithURL:[NSURL URLWithString:post.iPhoneThumbnail] placeholderImage:[UIImage imageNamed:@"WH_logo_3D_CMYK.png"]];
+    [videoCell.backgroundImage setImageWithURL:[NSURL URLWithString:post.iPadThumbnail] placeholderImage:[UIImage imageNamed:@"WH_logo_3D_CMYK.png"]];
     videoCell.titleLabel.text = post.title;
     videoCell.dateLabel.text = post.getDate;
     videoCell.card.layer.shadowColor = [UIColor blackColor].CGColor;
@@ -196,32 +196,19 @@
 
 #pragma mark - collection view data source
 
-- (NSInteger) collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
-{
-    return _arrBlogDataUnsorted.count;
+- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
+    return self.arrBlogDataUnsorted.count;
 }
 
-- (NSInteger)numberOfSectionsInCollectionView: (UICollectionView *)collectionView {
-    return 1;
-}
-
-- (UICollectionViewCell *) collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
-{
-    UICollectionViewCell *cell = nil;
-    cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"BlogColCell" forIndexPath:indexPath];
-    PostCollectionCell *postCell = (PostCollectionCell *)cell;
+- (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
+    Post *post = nil;
+    if (indexPath.row < self.arrBlogDataUnsorted.count) post = self.arrBlogDataUnsorted[indexPath.row];
     
-    //The following conditional was added due to the periodic error: NSArrayM objectAtIndex:]: index 2 beyond bounds for empty array
-    if (_arrBlogDataUnsorted.count > indexPath.row) {
-        Post *post = [_arrBlogDataUnsorted objectAtIndex:indexPath.row];
-        postCell.titleLabel.text = post.title;
-        postCell.dateLabel.text = [NSString stringWithFormat:@"%@ - %@", post.getDate, post.getTime];
-        [postCell.backgroundImage setImageWithURL:[NSURL URLWithString:post.iPadThumbnail] placeholderImage:[UIImage imageNamed:@"WH_logo_3D_CMYK.png"]];
-
-    } else {
-        postCell.titleLabel.text = @"";
-        postCell.dateLabel.text = @"";
-    }
+    PostCollectionCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"BlogColCell" forIndexPath:indexPath];
+    [cell.backgroundImage setImageWithURL:[NSURL URLWithString:post.iPadThumbnail] placeholderImage:[UIImage imageNamed:@"WH_logo_3D_CMYK.png"]];
+    cell.descriptionLabel = nil;
+    cell.titleLabel.text = post.title;
+    cell.dateLabel.text = post ? [NSString stringWithFormat:@"%@ - %@", post.getDate, post.getTime] : nil;
     
     cell.layer.shadowColor = [UIColor blackColor].CGColor;
     cell.layer.shadowRadius = 1;

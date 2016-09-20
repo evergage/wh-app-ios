@@ -36,19 +36,24 @@
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
 
 @property (strong, nonatomic) UIWindow *window;
+
 @property (strong, nonatomic) NSString *liveLink;
-@property (nonatomic, strong) NSArray *menuJSON;
-@property (nonatomic, strong) NSMutableArray *menuItems;
+
+@property (nonatomic, strong) NSMutableArray<NSDictionary *> *menuItems;
 @property (nonatomic) BOOL useEvergageRecs;
+
+@property (nonatomic, readonly) NSString *livePath;
+
 @property (nonatomic, strong) NSString *activeFeed;
 @property (nonatomic, strong) NSString *liveFeed;
+
 @property (nonatomic, strong) NSMutableArray *blogData;
 @property (nonatomic, strong) NSMutableArray *briefingRoomData;
 @property (nonatomic, strong) NSMutableArray *videoData;
 @property (nonatomic, strong) NSMutableArray *photoData;
-@property (nonatomic, strong) NSMutableArray *placeholderImages;
 @property (nonatomic, strong) NSArray *livePosts;
-@property (readwrite, assign)  NSUInteger liveEventCount;
+
+- (nonnull UIImage *)placeholderImageForIndexPath:(nullable NSIndexPath *)indexPath;
 
 @end
 

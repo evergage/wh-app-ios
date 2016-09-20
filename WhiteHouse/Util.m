@@ -24,18 +24,36 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 //
-//  BriefingRoomViewController.h
+//  Util.m
 //  WhiteHouse
+//
 
-#import <UIKit/UIKit.h>
-#import "SWRevealViewController.h"
-#import "DetailViewController.h"
-#import "DOMParser.h"
-#import "PostTableCell.h"
-#import "Post.h"
+#import "Util.h"
 
-@interface BriefingRoomViewController : UIViewController <UITableViewDelegate, UITableViewDataSource>
-@property (weak, nonatomic) IBOutlet UIBarButtonItem *sidebarButton;
-@property (weak, nonatomic) IBOutlet UITableView *tblBlogs;
-@property (weak, nonatomic) IBOutlet UIView *loadingView;
+@implementation Util
+
++ (nullable NSDate *)dateFromFeedDateString:(nullable NSString *)dateString {
+    static NSDateFormatter *dateFormatter;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        dateFormatter = [[NSDateFormatter alloc] init];
+        dateFormatter.locale = [NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"];
+        dateFormatter.timeZone = [NSTimeZone timeZoneForSecondsFromGMT:0];
+        dateFormatter.dateFormat = @"EEE, dd MMM yyyy HH:mm:ss ZZZ";
+    });
+    return [dateFormatter dateFromString:dateString];
+}
+
++ (nullable NSString *)userVisibleShortStringForDate:(nullable NSDate *)date {
+    static NSDateFormatter *dateFormatter;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        dateFormatter = [[NSDateFormatter alloc] init];
+        dateFormatter.dateStyle = NSDateFormatterShortStyle;
+        dateFormatter.timeStyle = NSDateFormatterShortStyle;
+        dateFormatter.timeZone = [NSTimeZone localTimeZone];
+    });
+    return [dateFormatter stringFromDate:date];
+}
+
 @end

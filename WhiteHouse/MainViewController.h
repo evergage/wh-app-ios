@@ -38,6 +38,4 @@
 @property (weak, nonatomic) IBOutlet UICollectionView *collectBlogs;
 @property (weak, nonatomic) IBOutlet UICollectionView *collectBlogsPlus;
 @property (strong, nonatomic) NSString *liveLink;
-@property (assign, nonatomic) int placeholderImageIndex;
--(void) refreshData;
 @end

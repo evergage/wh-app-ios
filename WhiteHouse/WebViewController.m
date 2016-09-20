@@ -29,9 +29,6 @@
 //
 
 #import "WebViewController.h"
-#import "GAI.h"
-#import "GAITracker.h"
-#import "GAIDictionaryBuilder.h"
 
 @interface WebViewController ()
 
@@ -76,18 +73,9 @@
     
 }
 
--(void)webViewDidFinishLoad:(UIWebView *)webView{
-    
+- (void)webViewDidFinishLoad:(UIWebView *)webView {
     [_activityind stopAnimating];
     [webView stringByEvaluatingJavaScriptFromString:@"window.scroll(0, document.getElementsByTagName('h1')[0].offsetTop);"];
-
-//    id<GAITracker> tracker = [[GAI sharedInstance] defaultTracker];
-//        
-//    [tracker send:[[GAIDictionaryBuilder createEventWithCategory:@"webViewLoaded"     // Event category (required)
-//                                                              action:@"button_press"  // Event action (required)
-//                                                               label:link             // Event label
-//                                                               value:nil] build]];    // Event value
-//    
 }
 
 @end

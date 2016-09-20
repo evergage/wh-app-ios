@@ -34,383 +34,223 @@
 #import "Post.h"
 #import "AppDelegate.h"
 #import "PostTableCell.h"
+#import "Constants.h"
+#import "Util.h"
 
 @interface LiveViewController ()
-
 @property (nonatomic, strong) UIRefreshControl *refreshControl;
-@property (nonatomic, strong) NSArray *arrNewsData;
-@property (nonatomic, strong) NSArray *arrNewsDataSorted;
-@property (nonatomic, strong) NSString *dataFilePath;
-@property (nonatomic, strong) NSIndexPath *colIndex;
-
--(void)refreshData;
--(void)performNewFetchedDataActionsWithDataArray:(NSArray *)dataArray;
-
+@property (nonatomic, strong) NSArray<Post *> *arrNewsData;
+@property (nonatomic, strong) NSArray<NSArray<Post *> *> *arrNewsDataSorted;
 @end
 
 @implementation LiveViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    _sidebarButton.target = self.revealViewController;
-    _sidebarButton.action = @selector(revealToggle:);
+    self.sidebarButton.target = self.revealViewController;
+    self.sidebarButton.action = @selector(revealToggle:);
     
     [self.view addGestureRecognizer:self.revealViewController.panGestureRecognizer];
     
-    [_tblNews setDelegate:self];
-    [_tblNews setDataSource:self];
+    self.tblNews.delegate = self;
+    self.tblNews.dataSource = self;
     
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString *docDirectory = [paths objectAtIndex:0];
-    _dataFilePath = [docDirectory stringByAppendingPathComponent:@"livedata"];
-    
-    _refreshControl = [[UIRefreshControl alloc] init];
-    
-    [_refreshControl addTarget:self
+    self.refreshControl = [[UIRefreshControl alloc] init];
+    [self.refreshControl addTarget:self
                             action:@selector(refreshData)
                   forControlEvents:UIControlEventValueChanged];
+    [self.tblNews addSubview:self.refreshControl];
     
-    [_tblNews addSubview:self.refreshControl];
-    if ([[NSFileManager defaultManager] fileExistsAtPath:_dataFilePath]) {
-        NSArray *dictsFromFile = [[NSMutableArray alloc] initWithContentsOfFile:_dataFilePath];
-        NSMutableArray *obList = [[NSMutableArray alloc]init];
-        for (NSDictionary *dict in dictsFromFile) {
-            [obList addObject:[Post postFromDictionary:dict]];
-        }
-        _arrNewsData = [NSArray arrayWithArray:obList];
-        DOMParser *parser = [[DOMParser alloc]init];
-        _arrNewsDataSorted = [NSArray arrayWithArray:[parser sectionPostsByToday:obList]];
-        [_tblNews reloadData];
+    NSMutableArray<Post *> *posts = [[NSMutableArray alloc] init];
+    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+    for (NSDictionary *postJSON in appDelegate.livePosts) {
+        [posts addObject:[Post postFromDictionary:postJSON]];
     }
-//    [self refreshData];    <=== this being commented forces app to rely on background refresh
+    [self updateUIWithPosts:posts];
     
-    _noLiveEventsView.hidden = YES;
+    // todo: detect if bg refresh disabled
+//    [self refreshData];    <=== this being commented forces app to rely on background refresh
     
     UIImageView *tempImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"seal-bg.png"]];
     tempImageView.contentMode = UIViewContentModeScaleAspectFill;
-    [tempImageView setFrame:_tblNews.frame];
+    [tempImageView setFrame:self.tblNews.frame];
     
-    _tblNews.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
-    _tblNews.backgroundView = tempImageView;
+    self.tblNews.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
+    self.tblNews.backgroundView = tempImageView;
     
     [[UITableViewHeaderFooterView appearance] setTintColor:[UIColor colorWithRed:0.9 green:0.9 blue:0.9 alpha:1.0]];
     self.view.backgroundColor = [UIColor colorWithRed:0.9 green:0.9 blue:0.9 alpha:1.0];
 
     self.edgesForExtendedLayout = UIRectEdgeNone;
-
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-}
-
--(void)viewWillAppear:(BOOL)animated {
-    [self.tblNews reloadData];
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
     [UIApplication sharedApplication].applicationIconBadgeNumber = 0;
-    
-    if ([[_arrNewsDataSorted objectAtIndex:0] count] < 1 && [[_arrNewsDataSorted objectAtIndex:1] count] < 1 && [[_arrNewsDataSorted objectAtIndex:2] count] < 1){
-        _noLiveEventsView.hidden = NO;
-    }else{
-        _noLiveEventsView.hidden = YES;
-    }
+    [self.tblNews reloadData];
     self.title = @"Live";
 }
 
-- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
-{
-    [_tblNews reloadData];
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
+    [self.tblNews reloadData];
 }
 
+- (void)refreshData {
+    [self fetchNewDataWithCompletionHandler:nil];
+}
 
--(void)refreshData{
-    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
+- (void)updateUIWithPosts:(NSArray<Post *> *)posts {
+    self.arrNewsData = posts;
+    DOMParser *parser = [[DOMParser alloc] init];
+    self.arrNewsDataSorted = [parser sectionPostsByToday:posts];
+    self.noLiveEventsView.hidden = posts.count;
+    [self.tblNews reloadData];
+}
+
+#pragma mark - Fetch
+// todo: fetching & data storage should probably be in some data/cache class, shouldn't be creating VC instance just to fetch and not render
+
+- (void)fetchNewDataWithCompletionHandler:(nullable void (^)(UIBackgroundFetchResult))completionHandler {
+    AppDelegate *appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
     NSURL *url = [[NSURL alloc] initWithString:appDelegate.liveFeed];
-    DOMParser * parser = [[DOMParser alloc] init];
+    DOMParser *parser = [[DOMParser alloc] init];
+    // todo: not on main!
     parser.xml = [NSString stringWithContentsOfURL:url encoding:NSUTF8StringEncoding error:nil];
-    NSArray * posts = [parser parseFeed];
-    _arrNewsDataSorted = [parser sectionPostsByToday:posts];
     [self.refreshControl endRefreshing];
-    if (posts) {
-        [self performNewFetchedDataActionsWithDataArray:posts];
-        [self.refreshControl endRefreshing];
-    }
-}
-
--(void)performNewFetchedDataActionsWithDataArray:(NSArray *)dataArray{
-    // 1. Initialize the arrNewsData array with the parsed data array.
-    if (_arrNewsData != nil) {
-        _arrNewsData = nil;
-    }
-    _arrNewsData = [[NSArray alloc] initWithArray:dataArray];
-    [UIApplication sharedApplication].applicationIconBadgeNumber = _arrNewsData.count;
+    NSArray<Post *> *posts = [parser parseFeed];
     
-    for (Post *d in _arrNewsData) {
-        if ([self inFuture:d]){
-            NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-            NSDate *date;
-            formatter.dateFormat = @"EEE, dd MMM yyyy HH:mm:ss ZZZ";
-            date = [formatter dateFromString: d.pubDate];
-            // subtract 30 minutes from date and correct for GMT
-            NSDate *fireDate = [date dateByAddingTimeInterval:(-30*60)];
+    if (posts.count == 0) {
+        NSLog(@"Failed to fetch new live data.");
+        if (completionHandler) completionHandler(UIBackgroundFetchResultFailed);
+        return;
+    }
+    
+    if (appDelegate.livePosts.count && [posts.firstObject.title isEqual:appDelegate.livePosts.firstObject[@"title"]]) {
+        NSLog(@"No new live data found.");
+        if (completionHandler) completionHandler(UIBackgroundFetchResultNoData);
+        return;
+    }
+    
+    NSLog(@"New live data was fetched.");
+    [self updateUIWithPosts:posts];
+    
+    UIApplication *app = [UIApplication sharedApplication];
+    if (app.applicationState == UIApplicationStateBackground) {
+        app.applicationIconBadgeNumber = posts.count;
+    }
+    
+    NSMutableArray<NSDictionary *> *postsJSON = [[NSMutableArray alloc] init];
+    for (Post *post in posts) {
+        [postsJSON addObject:[Post dictionaryFromPost:post]];
+    }
+    if (![postsJSON writeToFile:appDelegate.livePath atomically:YES]) {
+        NSLog(@"Couldn't save data.");
+    }
+    appDelegate.livePosts = postsJSON;
+    
+    for (Post *d in posts) {
+        NSDate *date = [Util dateFromFeedDateString:d.pubDate];
+        if (date.timeIntervalSinceNow > 0) {
             UILocalNotification* localNotification = [[UILocalNotification alloc] init];
-            localNotification.fireDate = fireDate;
+            localNotification.fireDate = [date dateByAddingTimeInterval:(-30 * 60)]; // Subtract 30 minutes from date
             localNotification.alertBody = [Post stringByStrippingHTML:d.title];
-            NSDictionary *postDict = [NSMutableDictionary dictionaryWithObjectsAndKeys:
-                                      d.title, @"title",
-                                      d.link, @"url",
-                                      nil];
-            localNotification.userInfo = postDict;
-            localNotification.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"EST"];
-            //localNotification.applicationIconBadgeNumber = [[UIApplication sharedApplication] applicationIconBadgeNumber] + 1;
+            localNotification.userInfo = @{
+                                           @"title" : d.title ?: @"",
+                                           @"url" : d.link ?: @"",
+                                           };
             [[UIApplication sharedApplication] scheduleLocalNotification:localNotification];
         }
     }
     
-    // 2. Reload the table view.
-    [self.tblNews reloadData];
-    NSMutableArray *savedPosts = [[NSMutableArray alloc]init];
-    for (Post *post in _arrNewsData) {
-        NSDictionary *dict = @{ @"title" : [Post stringByStrippingHTML:post.title], @"pubDate" : post.pubDate, @"url" : post.link, @"description" : post.pageDescription };
-        [savedPosts addObject:dict];
-    }
-    // 3. Save the data permanently to file.
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString *docDirectory = [paths objectAtIndex:0];
-    _dataFilePath = [docDirectory stringByAppendingPathComponent:@"livedata"];
-    if (![savedPosts writeToFile:_dataFilePath atomically:YES]) {
-        NSLog(@"Couldn't save data.");
-    }
-    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-    appDelegate.livePosts = savedPosts;
-}
-
--(void)fetchNewDataWithCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler{
-    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-    NSURL *url = [[NSURL alloc] initWithString:appDelegate.liveFeed];
-    DOMParser * parser = [[DOMParser alloc] init];
-    parser.xml = [NSString stringWithContentsOfURL:url encoding:NSUTF8StringEncoding error:nil];
-    NSArray * posts = [parser parseFeed];
-    if (posts.count > 0) {
-        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-        NSString *docDirectory = [paths objectAtIndex:0];
-        _dataFilePath = [docDirectory stringByAppendingPathComponent:@"livedata"];
-        if ([[NSFileManager defaultManager] fileExistsAtPath:_dataFilePath]) {
-            NSArray *dictsFromFile = [[NSMutableArray alloc] initWithContentsOfFile:_dataFilePath];
-            NSMutableArray *obList = [[NSMutableArray alloc]init];
-            for (NSDictionary *dict in dictsFromFile) {
-                [obList addObject:[Post postFromDictionary:dict]];
-            }
-            _arrNewsData = [NSArray arrayWithArray:obList];
-        }
-        if (_arrNewsData.count > 0){
-            Post *latestDataDict = [posts objectAtIndex:0];
-            NSString *latestTitle = latestDataDict.title;
-                
-            Post *existingDataDict = [_arrNewsData objectAtIndex:0];
-            NSString *existingTitle = existingDataDict.title;
-                
-            if ([latestTitle isEqualToString:existingTitle]) {
-                completionHandler(UIBackgroundFetchResultNoData);
-                NSLog(@"No new data found.");
-            }
-            else{
-                [self performNewFetchedDataActionsWithDataArray:posts];
-                completionHandler(UIBackgroundFetchResultNewData);
-                NSLog(@"New data was fetched.");
-            }
-        }
-    }
-    else{
-        completionHandler(UIBackgroundFetchResultFailed);
-        NSLog(@"Failed to fetch new data.");
-    }
-}
-
--(void)fetchLiveData{
-    AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
-    NSURL *url = [[NSURL alloc] initWithString:appDelegate.liveFeed];
-    DOMParser * parser = [[DOMParser alloc] init];
-    parser.xml = [NSString stringWithContentsOfURL:url encoding:NSUTF8StringEncoding error:nil];
-    NSArray * posts = [parser parseFeed];
-    if (posts.count > 0) {
-        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-        NSString *docDirectory = [paths objectAtIndex:0];
-        _dataFilePath = [docDirectory stringByAppendingPathComponent:@"livedata"];
-        if ([[NSFileManager defaultManager] fileExistsAtPath:_dataFilePath]) {
-            NSArray *dictsFromFile = [[NSMutableArray alloc] initWithContentsOfFile:_dataFilePath];
-            NSMutableArray *obList = [[NSMutableArray alloc]init];
-            for (NSDictionary *dict in dictsFromFile) {
-                [obList addObject:[Post postFromDictionary:dict]];
-            }
-            _arrNewsData = [NSArray arrayWithArray:obList];
-        }
-        Post *latestDataDict = [posts objectAtIndex:0];
-        NSString *latestTitle = latestDataDict.title;
-        
-        Post *existingDataDict = [_arrNewsData objectAtIndex:0];
-        NSString *existingTitle = existingDataDict.title;
-        
-        if ([latestTitle isEqualToString:existingTitle]) {
-            NSLog(@"No new data found.");
-        }
-        else{
-            [self performNewFetchedDataActionsWithDataArray:posts];
-            NSLog(@"New data was fetched.");
-        }
-    }
-    else{
-        NSLog(@"Failed to fetch new data.");
-    }
-    if (appDelegate.placeholderImages.count == 0){
-        for (int i=1; i<=4; i++){
-            [appDelegate.placeholderImages addObject:[UIImage imageNamed:@"WH_logo_3D_CMYK.png"]];
-        }
-    }
-    for (int i=1; i<=4; i++){
-        NSString *urlString = @"http://www.whitehouse.gov/sites/default/files/app/app_feature_XXX.jpg";
-        urlString = [urlString stringByReplacingOccurrencesOfString:@"XXX" withString:[NSString stringWithFormat:@"%i", i]];
-        NSURL *url = [NSURL URLWithString:urlString];
-        [self downloadImageWithURL:url completionBlock:^(BOOL succeeded, UIImage *image) {
-            if (succeeded) {
-                [appDelegate.placeholderImages replaceObjectAtIndex:(i-1) withObject:image];
-            }
-        }];
-    }
-}
-
-- (void)downloadImageWithURL:(NSURL *)url completionBlock:(void (^)(BOOL succeeded, UIImage *image))completionBlock
-{
-    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
-    [NSURLConnection sendAsynchronousRequest:request
-                                       queue:[NSOperationQueue mainQueue]
-                           completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
-                               if ( !error )
-                               {
-                                   UIImage *image = [[UIImage alloc] initWithData:data];
-                                   completionBlock(YES,image);
-                               } else{
-                                   completionBlock(NO,nil);
-                               }
-                           }];
+    if (completionHandler) completionHandler(UIBackgroundFetchResultNewData);
 }
 
 
-- (BOOL)inFuture:(Post*)post{
-    BOOL future = false;
-    NSDateFormatter *rssDateFormatter = [[NSDateFormatter alloc] init];
-    [rssDateFormatter setDateFormat:@"EEE, dd MMM yyyy HH:mm:ss ZZ"];
-    NSDate *rssDate = [rssDateFormatter dateFromString:post.pubDate];
-    NSDateFormatter *dayFormatter = [[NSDateFormatter alloc] init];
-    [dayFormatter setDateFormat:@"dd MMM yyyy"];
-    NSString *todayString = [dayFormatter stringFromDate: [NSDate date]];
-    NSString *otherString = [dayFormatter stringFromDate: rssDate];
-    BOOL isToday;
-    if([todayString isEqualToString:otherString]) {
-        isToday = true;
-    }
-        
-    NSDate *currentTime = [NSDate date];
-    NSComparisonResult result;
-    result = [rssDate compare:currentTime];
-    if (result == NSOrderedDescending){
-        future = true;
-    }
-    return future;
+#pragma mark - Table View
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+    return self.arrNewsDataSorted.count;
 }
 
-#pragma mark - Table view data source
-
--(NSInteger)numberOfSectionsInTableView:(UITableView *)tableView{
-    return _arrNewsDataSorted.count;
-}
-
--(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
-    return [[_arrNewsDataSorted objectAtIndex:section]count];
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    if (section >= self.arrNewsDataSorted.count) return 0;
+    return self.arrNewsDataSorted[section].count;
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
     switch (section) {
         case 0:
             return @"Today";
-            break;
         case 1:
             return @"Upcoming Events";
-            break;
         default:
             return @"Prior Events";
-            break;
     }
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-    if ([[_arrNewsDataSorted objectAtIndex:section]count] == 0) {
-        return 0;
-    } else {
-        return 20;
-    }
+    if (section >= self.arrNewsDataSorted.count) return 0;
+    if (self.arrNewsDataSorted[section].count) return 20;
+    return 0;
 }
 
--(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
-    UITableViewCell *cell = nil;
-    cell = [tableView dequeueReusableCellWithIdentifier:@"LiveCell" forIndexPath:indexPath];
-    PostTableCell *blogCell = (PostTableCell *)cell;
-    NSArray *set = [_arrNewsDataSorted objectAtIndex:indexPath.section];
-    Post *post = [set objectAtIndex:indexPath.row];
-    blogCell.titleLabel.text = [self parseString:post.title];
-    blogCell.dateLabel.text = [NSString stringWithFormat:@"%@ - %@", post.getDate, post.getTime];
-    blogCell.card.layer.shadowColor = [UIColor blackColor].CGColor;
-    blogCell.card.layer.shadowRadius = 1;
-    blogCell.card.layer.shadowOpacity = 0.2;
-    blogCell.card.layer.shadowOffset = CGSizeMake(0.2, 2);
-    blogCell.card.layer.masksToBounds = NO;
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    PostTableCell *cell = [tableView dequeueReusableCellWithIdentifier:@"LiveCell" forIndexPath:indexPath];
     
-    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-    formatter.dateFormat = @"EEE, dd MMM yyyy HH:mm:ss ZZZ";
-    NSDate *postDate = [formatter dateFromString: post.pubDate];
-    NSDate *postDateEnd = [postDate dateByAddingTimeInterval:(+30*60)];
-    NSDate *timeNow = [NSDate date];
+    Post *post = nil;
+    if (indexPath.section < self.arrNewsDataSorted.count) {
+        NSArray *postsForSection = self.arrNewsDataSorted[indexPath.section];
+        if (indexPath.row < postsForSection.count) post = postsForSection[indexPath.row];
+    }
     
-    if([Post date:timeNow isBetweenDate:postDate andDate:postDateEnd])
-        blogCell.happeningNowLabel.text = @"Happening Now";
-    else
-        blogCell.happeningNowLabel.text = @"";
-
-    [cell setBackgroundColor:[UIColor clearColor]];
+    cell.titleLabel.text = [self parseString:post.title];
+    cell.dateLabel.text = post ? [NSString stringWithFormat:@"%@ - %@", post.getDate, post.getTime] : @"";
+    cell.card.layer.shadowColor = [UIColor blackColor].CGColor;
+    cell.card.layer.shadowRadius = 1;
+    cell.card.layer.shadowOpacity = 0.2;
+    cell.card.layer.shadowOffset = CGSizeMake(0.2, 2);
+    cell.card.layer.masksToBounds = NO;
+    cell.backgroundColor = [UIColor clearColor];
     
+    NSDate *postDate = [Util dateFromFeedDateString:post.pubDate];
+    NSTimeInterval timeSincePost = postDate.timeIntervalSinceNow;
+    if (timeSincePost >= 0 && timeSincePost <= (30 * 60.0)) {
+        cell.happeningNowLabel.text = @"Happening Now";
+    } else {
+        cell.happeningNowLabel.text = @"";
+    }
     return cell;
 }
 
-#define IS_IOS_8_OR_LATER ([[[UIDevice currentDevice] systemVersion] floatValue] >= 8.0)
--(CGFloat) tableView: (UITableView * ) tableView heightForRowAtIndexPath: (NSIndexPath * ) indexPath {
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     if (IS_IOS_8_OR_LATER)
         return UITableViewAutomaticDimension;
     else {
-        NSArray *set = [_arrNewsDataSorted objectAtIndex:indexPath.section];
+        NSArray *set = [self.arrNewsDataSorted objectAtIndex:indexPath.section];
         Post *post = [set objectAtIndex:indexPath.row];
         NSString *title = [Post stringByStrippingHTML:post.title];
         NSError *error = nil;
         NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"\\?" options:NSRegularExpressionCaseInsensitive error:&error];
         NSString *string = [regex stringByReplacingMatchesInString:title options:0 range:NSMakeRange(0, [title length]) withTemplate:@""];
-        CGSize size = [string sizeWithFont:[UIFont fontWithName:@"Helvetica" size:17] constrainedToSize:CGSizeMake(_tblNews.frame.size.width, 999) lineBreakMode:NSLineBreakByWordWrapping];
+        CGSize size = [string sizeWithFont:[UIFont fontWithName:@"Helvetica" size:17] constrainedToSize:CGSizeMake(self.tblNews.frame.size.width, 999) lineBreakMode:NSLineBreakByWordWrapping];
         return size.height + 40;
-        
     }
 }
 
--(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [self performSegueWithIdentifier:@"LiveSegue" sender:self];
 }
 
+#pragma mark -
+
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    Post *post;
-    if (_tblNews.superview == self.view){
-        NSIndexPath *indexPath = [_tblNews indexPathForSelectedRow];
-        NSArray *set = [_arrNewsDataSorted objectAtIndex:indexPath.section];
-        post = [set objectAtIndex:indexPath.row];
-    }else{
-        NSArray *set = [_arrNewsDataSorted objectAtIndex:_colIndex.section];
-        post = [set objectAtIndex:_colIndex.row];
+    Post *post = nil;
+    NSIndexPath *indexPath = self.tblNews.indexPathForSelectedRow;
+    if (indexPath && indexPath.section < self.arrNewsDataSorted.count) {
+        NSArray *postsForSection = self.arrNewsDataSorted[indexPath.section];
+        if (indexPath.row < postsForSection.count) post = postsForSection[indexPath.row];
     }
+    
     WebViewController *destViewController = segue.destinationViewController;
     destViewController.url = post.link;
     NSLog(@"%@", post.link);
@@ -418,8 +258,8 @@
     self.title = @"";
 }
 
--(NSString*)parseString:(NSString*)str
-{
+// todo: why not standardized decoding, and why not done once in Post construction?
+- (NSString*)parseString:(NSString*)str {
     str  = [str stringByReplacingOccurrencesOfString:@"&ndash;" withString:@"-"];
     str  = [str stringByReplacingOccurrencesOfString:@"&rdquo;" withString:@"\""];
     str  = [str stringByReplacingOccurrencesOfString:@"&ldquo;" withString:@"\""];

@@ -37,6 +37,5 @@
 @property (weak, nonatomic) IBOutlet UICollectionView *collectBlogs;
 @property (weak, nonatomic) IBOutlet UICollectionView *collectBlogsPlus;
 @property (weak, nonatomic) IBOutlet UIView *loadingRecsView;
-@property (assign, nonatomic) int placeholderImageIndex;
 
 @end

@@ -34,6 +34,7 @@
 #import "PostTableCell.h"
 #import "PostCollectionCell.h"
 #import "UIKit+AFNetworking.h"
+#import "Util.h"
 #import <Evergage/Evergage.h>
 
 
@@ -42,7 +43,6 @@ static const int CELLS_PER_ROW = 2;
 
 
 @interface RecsViewController ()
-@property (nonatomic, strong) NSDateFormatter *dateFormatter;
 @property (nonatomic, strong) UIRefreshControl *refreshControl;
 @property (nonatomic, strong) NSArray<EVGItem *> *items;
 @property (nonatomic, strong) EVGItem *selectedItem;
@@ -53,10 +53,6 @@ static const int CELLS_PER_ROW = 2;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
-    _dateFormatter = [[NSDateFormatter alloc] init];
-    _dateFormatter.dateStyle = NSDateFormatterShortStyle;
-    _dateFormatter.timeStyle = NSDateFormatterShortStyle;
     
     UIColor *blue = [UIColor colorWithRed:0.0 green:0.2 blue:0.4 alpha:1.0];
     [[UINavigationBar appearance] setBarTintColor:blue];
@@ -85,6 +81,9 @@ static const int CELLS_PER_ROW = 2;
                   forControlEvents:UIControlEventValueChanged];
     
     NSString *deviceType = [UIDevice currentDevice].model;
+    // todo: (also main & video VCs)
+    // - refreshControl not ever added to collectBlogsPlus. And when rotates...
+    // - refreshControl also not operable when no items/recs
     if([deviceType isEqualToString:@"iPad"]){
         [self.collectBlogs addSubview:self.refreshControl];
     }else{
@@ -98,7 +97,6 @@ static const int CELLS_PER_ROW = 2;
     [_collectBlogsPlus setBackgroundColor:[UIColor colorWithRed:0.9 green:0.9 blue:0.9 alpha:1.0]];
     [_collectBlogs setBackgroundColor:[UIColor colorWithRed:0.9 green:0.9 blue:0.9 alpha:1.0]];
     self.edgesForExtendedLayout = UIRectEdgeNone;
-    _placeholderImageIndex = 0;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -114,14 +112,13 @@ static const int CELLS_PER_ROW = 2;
     [super viewDidAppear:animated];
     [_tblBlogs reloadData];
     [_collectBlogs reloadData];
-    _placeholderImageIndex = 0;
+    [_collectBlogsPlus reloadData];
 }
 
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
     [_tblBlogs reloadData];
     [_collectBlogs reloadData];
     [_collectBlogsPlus reloadData];
-    _placeholderImageIndex = 0;
 }
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
@@ -146,7 +143,6 @@ static const int CELLS_PER_ROW = 2;
     [_tblBlogs reloadData];
     [_collectBlogs reloadData];
     [_collectBlogsPlus reloadData];
-    _placeholderImageIndex = 0;
     [self.refreshControl endRefreshing];
     self.loadingRecsView.hidden = self.items.count > 0;
 }
@@ -187,18 +183,18 @@ static const int CELLS_PER_ROW = 2;
     EVGItem *item = nil;
     if (indexPath.row < self.items.count) item = self.items[indexPath.row];
     
-    PostTableCell *cell = nil;
-    if (item.imageUrl) {
+    PostTableCell *cell;
+    NSURL *imageURL = [NSURL URLWithString:item.imageUrl];
+    if (imageURL) {
         cell = [tableView dequeueReusableCellWithIdentifier:@"BlogCell" forIndexPath:indexPath];
-        [cell.backgroundImage setImageWithURL:[NSURL URLWithString:item.imageUrl] placeholderImage:appDelegate.placeholderImages[_placeholderImageIndex]];
-        (_placeholderImageIndex == 3) ? _placeholderImageIndex = 0 : _placeholderImageIndex++;
+        [cell.backgroundImage setImageWithURL:imageURL placeholderImage:[appDelegate placeholderImageForIndexPath:indexPath]];
     } else {
         cell = [tableView dequeueReusableCellWithIdentifier:@"BlogCellNoImage" forIndexPath:indexPath];
-        cell.backgroundImage = nil;
     }
+    
     cell.titleLabel.text = item.name;
     cell.dateLabel.text = nil;
-    if (item.published) cell.dateLabel.text = [self.dateFormatter stringFromDate:item.published];
+    if (item.published) cell.dateLabel.text = [Util userVisibleShortStringForDate:item.published];
     cell.card.layer.shadowColor = [UIColor blackColor].CGColor;
     cell.card.layer.shadowRadius = 1;
     cell.card.layer.shadowOpacity = 0.2;
@@ -229,16 +225,14 @@ static const int CELLS_PER_ROW = 2;
     EVGItem *item = nil;
     if (indexPath.row < self.items.count) item = self.items[indexPath.row];
     
+    // Always use image cell since no descriptionLabel text for NoImage
     PostCollectionCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"BlogColCell" forIndexPath:indexPath];
-    if (item.imageUrl) {
-        [cell.backgroundImage setImageWithURL:[NSURL URLWithString:item.imageUrl] placeholderImage: appDelegate.placeholderImages[_placeholderImageIndex]];
-        //(_placeholderImageIndex == 3) ? _placeholderImageIndex = 0 : _placeholderImageIndex++;
-    } else {
-        cell.backgroundImage = nil;
-    }
+    NSURL *imageURL = [NSURL URLWithString:item.imageUrl]; // May be nil
+    [cell.backgroundImage setImageWithURL:imageURL placeholderImage:[appDelegate placeholderImageForIndexPath:indexPath]];
+    
+    cell.descriptionLabel.text = nil;
     cell.titleLabel.text = item.name;
-    cell.dateLabel.text = nil;
-    if (item.published) cell.dateLabel.text = [self.dateFormatter stringFromDate:item.published];
+    cell.dateLabel.text = item.published ? [Util userVisibleShortStringForDate:item.published] : nil;
     cell.layer.shadowColor = [UIColor blackColor].CGColor;
     cell.layer.shadowRadius = 1;
     cell.layer.shadowOpacity = 0.2;

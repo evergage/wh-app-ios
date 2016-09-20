@@ -113,6 +113,7 @@
     [sortedPosts addObject:postsUpcoming];
     [sortedPosts addObject:postsPrior];
     for (Post *post in posts) {
+        // todo: ugh
         NSDateFormatter *rssDateFormatter = [[NSDateFormatter alloc] init];
         [rssDateFormatter setDateFormat:@"EEE, dd MMM yyyy HH:mm:ss ZZ"];
         NSDate *rssDate = [rssDateFormatter dateFromString:post.pubDate];

@@ -32,9 +32,6 @@
 #import "FavoritesViewController.h"
 #import "Social/Social.h"
 #import <CoreLocation/CoreLocation.h>
-#import "GAI.h"
-#import "GAITracker.h"
-#import "GAIDictionaryBuilder.h"
 #import "Constants.h"
 #import "AppDelegate.h"
 #import "LiveViewController.h"
@@ -180,26 +177,16 @@
     
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-}
-
-- (void) viewDidAppear:(BOOL)animated{
-    [super viewDidAppear:animated];
-        
-}
-
--(void) viewWillDisappear:(BOOL)animated{
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
     [self.baseView removeFromSuperview];
 }
 
-- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
-{
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
     [self createBanner];
-    
 }
 
--(void)createBanner{
+- (void)createBanner {
     [self.baseView removeFromSuperview];
     AppDelegate *appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     if(appDelegate.livePosts){

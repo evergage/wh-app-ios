@@ -93,35 +93,43 @@
     }
     return str;
 }
-+ (Post *)postFromDictionary:(NSDictionary*)dict{
-    Post *post = [[Post alloc]init];
-    post.type = [dict objectForKey:@"type"];
-    post.title = [dict objectForKey:@"title"];
-    post.creator = [dict objectForKey:@"creator"];
-    post.pageDescription = [dict objectForKey:@"pageDescription"];
-    post.link = [dict objectForKey:@"url"];
-    post.video = [dict objectForKey:@"video"];
-    post.pubDate = [dict objectForKey:@"pubDate"];
-    post.iPadThumbnail = [dict objectForKey:@"iPadThumbnail"];
-    post.mobile2048 = [dict objectForKey:@"mobile2048"];
+
++ (Post *)postFromDictionary:(NSDictionary*)dict {
+    Post *post = [[Post alloc] init];
+    // type validation would be nice
+    post.type = dict[@"type"];
+    post.title = dict[@"title"];
+    post.pubDate = dict[@"pubDate"];
+    post.link = dict[@"url"];
+    post.creator = dict[@"creator"];
+    post.pageDescription = dict[@"pageDescription"];
+    post.collectionThumbnail = dict[@"collectionThumbnail"];
+    post.iPhoneThumbnail = dict[@"iPhoneThumbnail"];
+    post.iPadThumbnail = dict[@"iPadThumbnail"];
+    post.video = dict[@"video"];
+    post.mobile1024 = dict[@"mobile1024"];
+    post.mobile2048 = dict[@"mobile2048"];
     return post;
 }
-+ (NSDictionary *)dictionaryFromPost:(Post*)post{
+
++ (NSDictionary *)dictionaryFromPost:(Post*)post {
     NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
-    [dict setValue:post.type forKey:@"type"];
-    [dict setValue:post.title forKey:@"title"];
-    [dict setValue:post.link forKey:@"url"];
-    [dict setValue:post.video forKey:@"video"];
-    [dict setValue:post.pageDescription forKey:@"pageDescription"];
-    [dict setValue:post.iPadThumbnail forKey:@"iPadThumbnail"];
-    [dict setValue:post.pubDate forKey:@"pubDate"];
-    [dict setValue:post.creator forKey:@"creator"];
-    [dict setValue:post.mobile2048 forKey:@"mobile2048"];
+    dict[@"type"] = post.type;
+    dict[@"title"] = post.title;
+    dict[@"pubDate"] = post.pubDate;
+    dict[@"url"] = post.link;
+    dict[@"creator"] = post.creator;
+    dict[@"pageDescription"] = post.pageDescription;
+    dict[@"collectionThumbnail"] = post.collectionThumbnail;
+    dict[@"iPhoneThumbnail"] = post.iPhoneThumbnail;
+    dict[@"iPadThumbnail"] = post.iPadThumbnail;
+    dict[@"video"] = post.video;
+    dict[@"mobile1024"] = post.mobile1024;
+    dict[@"mobile2048"] = post.mobile2048;
     return dict;
 }
 
-+ (BOOL)date:(NSDate*)date isBetweenDate:(NSDate*)beginDate andDate:(NSDate*)endDate
-{
++ (BOOL)date:(NSDate*)date isBetweenDate:(NSDate*)beginDate andDate:(NSDate*)endDate {
     if ([date compare:beginDate] == NSOrderedAscending)
         return NO;
     

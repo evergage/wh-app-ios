@@ -32,7 +32,6 @@
 #import "SWRevealViewController.h"
 #import "AppDelegate.h"
 #import "MWPhotoBrowser.h"
-#import "GAITrackedViewController.h"
 
 @interface PhotoViewController : UICollectionViewController<UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, MWPhotoBrowserDelegate>
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *sidebarButton;

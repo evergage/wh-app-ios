@@ -42,102 +42,234 @@
 
 
 @interface AppDelegate ()<SWRevealViewControllerDelegate>
-
+@property (nonatomic, readonly) NSString *menuPath;
+@property (nonatomic, readonly) NSMutableArray<UIImage *> *placeholderImages;
 @end
+
 
 @implementation AppDelegate
 
-#define USE_STAGING_FEEDS (false)
+- (instancetype)init {
+    if (self = [super init]) {
+        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+        _menuPath = [paths.firstObject stringByAppendingPathComponent:@"menuData"];
+        _livePath = [paths.firstObject stringByAppendingPathComponent:@"livedata"];
+        _placeholderImages = [NSMutableArray arrayWithObjects:
+                              [UIImage imageNamed:@"WH_logo_3D_CMYK.png"],
+                              [UIImage imageNamed:@"WH_logo_3D_CMYK.png"],
+                              [UIImage imageNamed:@"WH_logo_3D_CMYK.png"],
+                              [UIImage imageNamed:@"WH_logo_3D_CMYK.png"],
+                              [UIImage imageNamed:@"WH_logo_3D_CMYK.png"],
+                              nil];
+    }
+    return self;
+}
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    
-    //Evergage Integration
-    Evergage *evergage = [Evergage sharedInstance];
-    NSString *evgAccountKey = @"demo";
-    NSString *evgDatasetId = @"whitehouse";
-    
-#ifdef DEBUG
-    // Development settings
-    evergage.logLevel = EVGLogLevelWarn;
-    [evergage allowDesignConnections];
-#endif
-    [evergage startWithEvergageAccountKey:evgAccountKey dataset:evgDatasetId];
-    
-    
-    // Override point for customization after application launch.
-    
-    _placeholderImages = [[NSMutableArray alloc] init];
-    
-    
-    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
-    UIColor *blue = [UIColor colorWithRed:0.0 green:0.2 blue:0.4 alpha:1.0];
-    [[UINavigationBar appearance] setBarTintColor:blue];
-    [[UINavigationBar appearance]setTitleTextAttributes:@{NSForegroundColorAttributeName : [UIColor whiteColor]}];
-    [[UINavigationBar appearance] setTintColor:[UIColor whiteColor]];
-    NSDictionary *attributes = [NSDictionary dictionaryWithObjectsAndKeys:[UIFont
-                                                                           fontWithName:@"Times" size:20], NSFontAttributeName,
-                                [UIColor whiteColor], NSForegroundColorAttributeName, nil];
-    
-    [[UINavigationBar appearance] setTitleTextAttributes:attributes];
-    
-    if ([UIApplication instancesRespondToSelector:@selector(registerUserNotificationSettings:)]) {
-        [[UIApplication sharedApplication] registerUserNotificationSettings:[UIUserNotificationSettings settingsForTypes:UIUserNotificationTypeAlert|UIUserNotificationTypeSound
-                                                                                                              categories:nil]];
-    }
-    
-    // set badge icon to 0
-    application.applicationIconBadgeNumber = 0;
-    
     [application setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
     
-    [self setupNavigation];
+    [self reloadMenu]; // Creates liveFeed, needed for bg fetch
+    self.livePosts = [NSMutableArray arrayWithContentsOfFile:self.livePath]; // So bg fetch discovers if new data or not
     
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString *docDirectory = [paths objectAtIndex:0];
-    NSString *dataFilePath = [docDirectory stringByAppendingPathComponent:@"livedata"];
-    if ([[NSFileManager defaultManager] fileExistsAtPath:dataFilePath]) {
-        NSArray *dictsFromFile = [[NSMutableArray alloc] initWithContentsOfFile:dataFilePath];
-        _livePosts = dictsFromFile;
-        DOMParser * parser = [[DOMParser alloc] init];
-        _liveEventCount = [parser upcomingPostCount:dictsFromFile];
+    if (application.applicationState != UIApplicationStateBackground) {
+        [self constructUI];
     }
     
     return YES;
 }
 
--(BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
-    if ([[Evergage sharedInstance] handleOpenURL:url]) {
-        return YES;
+- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
+    return [[Evergage sharedInstance] handleOpenURL:url];
+}
+
+- (void)applicationWillEnterForeground:(UIApplication *)application {
+    if (!self.window) {
+        [self constructUI];
     }
-    return NO;
 }
 
 - (void)applicationDidEnterBackground:(UIApplication *)application {
-    // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
-    // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
-    
-    [_blogData removeAllObjects];
-    [_videoData removeAllObjects];
-    [_briefingRoomData removeAllObjects];
+    [self.blogData removeAllObjects];
+    [self.photoData removeAllObjects];
+    [self.videoData removeAllObjects];
+    [self.briefingRoomData removeAllObjects];
 }
 
-# pragma BackgroundFetch
 
--(void)application:(UIApplication *)application performFetchWithCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler{
-    NSDate *fetchStart = [NSDate date];
+#pragma mark - Construct UI
+
+- (void)constructUI {
+    // Evergage Integration
+    Evergage *evergage = [Evergage sharedInstance];
+#ifdef DEBUG
+    // Development settings
+    //evergage.logLevel = EVGLogLevelWarn;
+    evergage.logLevel = EVGLogLevelDebug;
+    [evergage allowDesignConnections];
+#endif
+    [evergage startWithEvergageAccountKey:@"demo" dataset:@"whitehouse"];
     
-    LiveViewController *liveViewController = [[LiveViewController alloc]init];
-    
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString *docDirectory = [paths objectAtIndex:0];
-    NSString *menuPath = [docDirectory stringByAppendingPathComponent:@"menuData"];
-    if ([[NSFileManager defaultManager] fileExistsAtPath:menuPath]) {
-        _menuItems = [[NSMutableArray alloc] initWithContentsOfFile:menuPath];
-        _liveFeed = [[_menuItems objectAtIndex:4] objectForKey:@"feed-url"];
-    }else{
-        _liveFeed = @"http://www.whitehouse.gov/feed/mobile/live";
+    UIApplication *application = [UIApplication sharedApplication];
+    application.statusBarStyle = UIStatusBarStyleLightContent;
+    [UINavigationBar appearance].barTintColor = [UIColor colorWithRed:0.0 green:0.2 blue:0.4 alpha:1.0];
+    [UINavigationBar appearance].titleTextAttributes = @{NSForegroundColorAttributeName : [UIColor whiteColor]};
+    [UINavigationBar appearance].tintColor = [UIColor whiteColor];
+    [UINavigationBar appearance].titleTextAttributes = @{
+        NSFontAttributeName : [UIFont fontWithName:@"Times" size:20],
+        NSForegroundColorAttributeName : [UIColor whiteColor]
+    };
+    if ([application respondsToSelector:@selector(registerUserNotificationSettings:)]) {
+        [application registerUserNotificationSettings:
+         [UIUserNotificationSettings settingsForTypes:UIUserNotificationTypeAlert|UIUserNotificationTypeSound|UIUserNotificationTypeBadge categories:nil]];
     }
+    
+    application.applicationIconBadgeNumber = 0;
+    
+    self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
+    UIStoryboard *mainStoryboard = [UIStoryboard storyboardWithName:@"Main" bundle: nil];
+    SWRevealViewController *revealVC = [mainStoryboard instantiateInitialViewController];
+    self.window.rootViewController = revealVC;
+    [self.window makeKeyAndVisible];
+    SidebarViewController *sidebarVC = (SidebarViewController *)revealVC.rearViewController;
+    [sidebarVC performSegueWithIdentifier:@"BlogSegue" sender:sidebarVC];
+    
+    [self fetchMenu];
+    [self fetchPlaceholderImages];
+    
+    // todo: ugh
+    LiveViewController *liveViewController = [[LiveViewController alloc]init];
+    [liveViewController fetchNewDataWithCompletionHandler:nil];
+}
 
+
+#pragma mark - Menu
+
+- (NSArray<NSDictionary *> *)defaultFeeds {
+    return @[
+             @{
+                 @"title"     : @"Blog",
+                 @"view-type" : @"article-list",
+                 @"feed-url"  : @"http://www.whitehouse.gov/feed/mobile/blog"
+                 },
+             @{
+                 @"title"     : @"Briefing Room",
+                 @"view-type" : @"article-list",
+                 @"feed-url"  : @"http://www.whitehouse.gov/feed/mobile/newsroom"
+                 },
+             @{
+                 @"title"     : @"Photos",
+                 @"view-type" : @"photo-gallery",
+                 @"feed-url"  : @"http://www.whitehouse.gov/feed/mobile/photos"
+                 },
+             @{
+                 @"title"     : @"Videos",
+                 @"view-type" : @"video-gallery",
+                 @"feed-url"  : @"http://www.whitehouse.gov/feed/mobile/video"
+                 },
+             @{
+                 @"title"     : @"Live",
+                 @"view-type" : @"live",
+                 @"feed-url"  : @"http://www.whitehouse.gov/feed/mobile/live"
+                 },
+             ];
+}
+
+- (NSArray<NSDictionary *> *)nonFeedMenuItems {
+    return @[
+             @{
+                 @"title"     : @"Favorites",
+                 @"view-type" : @"favorites"
+                 },
+             @{
+                 @"title"     : [NSString stringWithFormat:@"%@ Recs", self.useEvergageRecs ? @"Disable" : @"Enable"]
+                 },
+             @{
+                 @"title"     : @"Recommendations",
+                 @"view-type" : @"recs"
+                 }
+             ];
+}
+
+- (void)setUseEvergageRecs:(BOOL)useEvergageRecs {
+    _useEvergageRecs = useEvergageRecs;
+    self.menuItems[self.menuItems.count-2] = @{ @"title" : [NSString stringWithFormat:@"%@ Recs", useEvergageRecs ? @"Disable" : @"Enable"] };
+}
+
+- (void)reloadMenu {
+    NSMutableArray<NSDictionary *> *items = [NSMutableArray arrayWithContentsOfFile:self.menuPath];
+    if (!items) items = [self defaultFeeds].mutableCopy;
+    [items addObjectsFromArray:[self nonFeedMenuItems]];
+    self.menuItems = items;
+    for (NSDictionary *item in items) {
+        if ([@"live" isEqual:item[@"view-type"]]) {
+            self.liveFeed = item[@"feed-url"];
+            break;
+        }
+    }
+}
+
+- (void)fetchMenu {
+    NSString *menuUrl = [NSString stringWithFormat:@"http://www.whitehouse.gov/sites/default/files/feeds/config.json"];
+    NSURL *url = [NSURL URLWithString:menuUrl];
+    NSURLRequest *request = [NSURLRequest requestWithURL:url];
+    
+    __weak typeof(self) weakSelf = self;
+    AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc] initWithRequest:request];
+    operation.responseSerializer = [AFJSONResponseSerializer serializer];
+    operation.responseSerializer.acceptableContentTypes = [NSSet setWithObject:@"text/plain"];
+    [operation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
+        __strong typeof(weakSelf) strongSelf = weakSelf;
+        if (!strongSelf) return;
+        
+        NSArray *menuJSON = responseObject[@"feeds"];
+        // validate?
+        if (![menuJSON writeToFile:strongSelf.menuPath atomically:YES]) {
+            NSLog(@"Couldn't save menu config");
+        }
+        [strongSelf reloadMenu];
+        //[strongSelf preloadData];
+        
+    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+        NSLog(@"Error fetching menu config");
+    }];
+    [operation start];
+}
+
+
+#pragma mark - Placeholder Images
+
+- (void)fetchPlaceholderImages {
+    for (int i=1; i<=4; i++) {
+        NSString *urlString = [NSString stringWithFormat:@"http://www.whitehouse.gov/sites/default/files/app/app_feature_%i.jpg", i];
+        NSURL *url = [NSURL URLWithString:urlString];
+        
+        __weak typeof(self) weakSelf = self;
+        [NSURLConnection sendAsynchronousRequest:[NSMutableURLRequest requestWithURL:url]
+                                           queue:[NSOperationQueue mainQueue]
+                               completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
+                                   UIImage *image = nil;
+                                   if (!data || error || !(image = [UIImage imageWithData:data])) return;
+                                   [weakSelf.placeholderImages replaceObjectAtIndex:i withObject:image];
+                               }];
+    }
+}
+
+- (nonnull UIImage *)placeholderImageForIndexPath:(nullable NSIndexPath *)indexPath {
+    return self.placeholderImages[(indexPath.section + indexPath.row) % self.placeholderImages.count];
+}
+
+
+#pragma mark - Background Fetch Live Feed
+
+- (void)application:(UIApplication *)application performFetchWithCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
+    if (!self.liveFeed) {
+        completionHandler(UIBackgroundFetchResultFailed);
+        return;
+    }
+    
+    // todo: creating throw-away VCs (done in many places) is awful
+    NSDate *fetchStart = [NSDate date];
+    LiveViewController *liveViewController = [[LiveViewController alloc] init];
     [liveViewController fetchNewDataWithCompletionHandler:^(UIBackgroundFetchResult result) {
         completionHandler(result);
         
@@ -147,129 +279,44 @@
     }];
 }
 
-# pragma notifications
 
-- (void)application:(UIApplication *)app didReceiveLocalNotification:(UILocalNotification *)localNotification{
-    if (localNotification) {
-        _liveLink = [localNotification.userInfo valueForKey:@"url"];
-    }
-    UIApplicationState state = [[UIApplication sharedApplication] applicationState];
-    if (state == UIApplicationStateActive) {
-        NSDate *eventStart = localNotification.fireDate;
-        NSDate *eventBefore = [eventStart dateByAddingTimeInterval:(-31*60)];
-        NSDate* sourceDate = [NSDate date];
-        NSTimeZone* sourceTimeZone = [NSTimeZone timeZoneWithAbbreviation:@"GMT"];
-        NSTimeZone* destinationTimeZone = [NSTimeZone systemTimeZone];
-        NSInteger sourceGMTOffset = [sourceTimeZone secondsFromGMTForDate:sourceDate];
-        NSInteger destinationGMTOffset = [destinationTimeZone secondsFromGMTForDate:sourceDate];
-        NSTimeInterval interval = destinationGMTOffset - sourceGMTOffset;
-        NSDate *timeNow = [[NSDate alloc] initWithTimeInterval:interval sinceDate:sourceDate];
-        
-        if([Post date:timeNow isBetweenDate:eventBefore andDate:eventStart]){
-            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"In 30 Minutes"
-                                                            message:localNotification.alertBody
-                                                           delegate:self cancelButtonTitle:@"OK"
-                                                  otherButtonTitles:nil];
-            [alert show];
+#pragma mark - Notifications
+
+- (void)application:(UIApplication *)app didReceiveLocalNotification:(UILocalNotification *)localNotification {
+    self.liveLink = localNotification.userInfo[@"url"];
+    if (UIApplicationStateActive == app.applicationState) {
+        NSTimeInterval timeUntilStart = localNotification.fireDate.timeIntervalSinceNow;
+        if (timeUntilStart > 0 && timeUntilStart < (30*60.0)) {
+            [[[UIAlertView alloc] initWithTitle:@"In 30 Minutes"
+                                        message:localNotification.alertBody
+                                       delegate:nil
+                              cancelButtonTitle:@"OK"
+                              otherButtonTitles:nil]
+             show];
         }
     }
 }
 
-- (void)setUseEvergageRecs:(BOOL)useEvergageRecs {
-    _useEvergageRecs = useEvergageRecs;
-    _menuItems[_menuItems.count-2] = @{@"title" : [NSString stringWithFormat:@"%@ Recs", useEvergageRecs ? @"Disable" : @"Enable"]};
-}
 
-- (void) setupNavigation{
-    // Updating menu from whitehouse JSON
-    
-    NSString *menuUrl = [NSString stringWithFormat:@"http://www.whitehouse.gov/sites/default/files/feeds/config.json"];
-    NSURL *url = [NSURL URLWithString:menuUrl];
-    NSURLRequest *request = [NSURLRequest requestWithURL:url];
-    
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString *docDirectory = [paths objectAtIndex:0];
-    NSString *menuPath = [docDirectory stringByAppendingPathComponent:@"menuData"];
-    
-    NSArray *menuItemsToAdd = @[
-                                @{@"title" : @"Favorites"},
-                                @{@"title" : [NSString stringWithFormat:@"%@ Recs", self.useEvergageRecs ? @"Disable" : @"Enable"]},
-                                @{@"title" : @"Recommendations"}
-                                ];
-    
-    if USE_STAGING_FEEDS {
-        NSString *file = [[NSBundle mainBundle] pathForResource:@"feeds" ofType:@"json"];
-        NSString *str = [NSString stringWithContentsOfFile:file encoding:NSUTF8StringEncoding error:NULL];
-        NSError *jsonError;
-        NSData *objectData = [str dataUsingEncoding:NSUTF8StringEncoding];
-        NSDictionary *json = [NSJSONSerialization JSONObjectWithData:objectData
-                                                             options:NSJSONReadingMutableContainers
-                                                               error:&jsonError];
-        _menuJSON = json[@"feeds"];
-        [_menuJSON writeToFile:menuPath atomically: YES];
-        _menuItems = [[NSMutableArray alloc] initWithArray: _menuJSON];
-        [_menuItems addObjectsFromArray:menuItemsToAdd];
-        [self preloadData];
-        
-    }else{
-        AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc] initWithRequest:request];
-        operation.responseSerializer = [AFJSONResponseSerializer serializer];
-        operation.responseSerializer.acceptableContentTypes = [NSSet setWithObject:@"text/plain"];
-        [operation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
-            
-            _menuJSON = responseObject[@"feeds"];
-            if (![_menuJSON writeToFile:menuPath atomically:YES]) {
-                NSLog(@"Couldn't save menu config");
-            }
-            if ([[NSFileManager defaultManager] fileExistsAtPath:menuPath]) {
-                _menuItems = [[NSMutableArray alloc] initWithContentsOfFile:menuPath];
-                [_menuItems addObjectsFromArray:menuItemsToAdd];
-            }
-            //        [_searchTableView reloadData];    uncommment to force relad of menu config
-            
-            [self preloadData];
-            
-        } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-            
-            if ([[NSFileManager defaultManager] fileExistsAtPath:menuPath]) {
-                _menuItems = [[NSMutableArray alloc] initWithContentsOfFile:menuPath];
-                [_menuItems addObjectsFromArray:menuItemsToAdd];
-            }
-            NSLog(@"Error fetching menu config");
-        }];
-        [operation start];
-    }
+//#pragma mark - Preload
+// sync network calls and making assumptions about menu items/order
+//- (void)preloadData {
+//    DOMParser * parser = [[DOMParser alloc] init];
+//    NSURL *briefingUrl = [[NSURL alloc] initWithString:[[_menuItems objectAtIndex:1] objectForKey:@"feed-url"]];
+//    parser.xml = [NSString stringWithContentsOfURL:briefingUrl encoding:NSUTF8StringEncoding error:nil];
+//    _briefingRoomData = [[NSMutableArray alloc]init];
+//    [_briefingRoomData addObjectsFromArray:[parser parseFeed]];
+//    NSURL *photoUrl = [[NSURL alloc] initWithString:[[_menuItems objectAtIndex:2] objectForKey:@"feed-url"]];
+//    parser.xml = [NSString stringWithContentsOfURL:photoUrl encoding:NSUTF8StringEncoding error:nil];
+//    _photoData = [[NSMutableArray alloc]init];
+//    [_photoData addObjectsFromArray:[parser parseFeed]];
+//    NSURL *videoUrl = [[NSURL alloc] initWithString:[[_menuItems objectAtIndex:3] objectForKey:@"feed-url"]];
+//    parser.xml = [NSString stringWithContentsOfURL:videoUrl encoding:NSUTF8StringEncoding error:nil];
+//    _videoData = [[NSMutableArray alloc]init];
+//    [_videoData addObjectsFromArray:[parser parseFeed]];
+//    // Currently recs are on-demand in the VC and not pre-loaded or saved beyond VC instance
+//}
 
-    
-    
-    if ([[NSFileManager defaultManager] fileExistsAtPath:menuPath]) {
-        _menuItems = [[NSMutableArray alloc] initWithContentsOfFile:menuPath];
-        [_menuItems addObjectsFromArray:menuItemsToAdd];
-        _activeFeed = [[_menuItems objectAtIndex:0] objectForKey:@"feed-url"];
-        _liveFeed = [[_menuItems objectAtIndex:4] objectForKey:@"feed-url"];
-    }else{
-        _activeFeed = @"http://www.whitehouse.gov/feed/mobile/blog";
-        _liveFeed = @"http://www.whitehouse.gov/feed/mobile/live";
-    }
-    LiveViewController *liveViewController = [[LiveViewController alloc]init];
-    [liveViewController fetchLiveData];
-}
 
--(void)preloadData{
-    DOMParser * parser = [[DOMParser alloc] init];
-    NSURL *briefingUrl = [[NSURL alloc] initWithString:[[_menuItems objectAtIndex:1] objectForKey:@"feed-url"]];
-    parser.xml = [NSString stringWithContentsOfURL:briefingUrl encoding:NSUTF8StringEncoding error:nil];
-    _briefingRoomData = [[NSMutableArray alloc]init];
-    [_briefingRoomData addObjectsFromArray:[parser parseFeed]];
-    NSURL *photoUrl = [[NSURL alloc] initWithString:[[_menuItems objectAtIndex:2] objectForKey:@"feed-url"]];
-    parser.xml = [NSString stringWithContentsOfURL:photoUrl encoding:NSUTF8StringEncoding error:nil];
-    _photoData = [[NSMutableArray alloc]init];
-    [_photoData addObjectsFromArray:[parser parseFeed]];
-    NSURL *videoUrl = [[NSURL alloc] initWithString:[[_menuItems objectAtIndex:3] objectForKey:@"feed-url"]];
-    parser.xml = [NSString stringWithContentsOfURL:videoUrl encoding:NSUTF8StringEncoding error:nil];
-    _videoData = [[NSMutableArray alloc]init];
-    [_videoData addObjectsFromArray:[parser parseFeed]];
-    // Wow, app is making synchronous network calls.  Anyhow, currently recs is on-demand in the VC and not pre-loaded or saved beyond VC instance
-}
 
 @end

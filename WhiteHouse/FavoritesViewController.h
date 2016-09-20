@@ -44,9 +44,8 @@
 @property (strong, nonatomic) MPMoviePlayerController *moviePlayerController;
 @property(nonatomic,strong)NSMutableArray *photos;
 @property (weak, nonatomic) IBOutlet UIView *noFavoritesView;
-@property (assign, nonatomic) int placeholderImageIndex;
 
--(void) addFavoritesObject:(Post *)page;
--(void) removeFavoritesObject:(Post *)page;
--(BOOL) isFavorited:(Post *)page;
+- (void)addFavoritesObject:(Post *)page;
+- (void)removeFavoritesObject:(Post *)page;
+- (BOOL)isFavorited:(Post *)page;
 @end
