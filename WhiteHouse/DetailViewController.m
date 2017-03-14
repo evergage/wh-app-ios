@@ -43,6 +43,7 @@
 @property (weak, nonatomic) NSString *favoriteButtonTitle;
 @property (nonatomic, assign) const float heightCon;
 @property (nonatomic, strong) UIView *baseView;
+@property (nonatomic, strong) EVGArticle *article;
 @end
 
 @implementation DetailViewController
@@ -165,21 +166,44 @@
             }
         }
         
-        EVGTag *author = [EVGTag tagWithId:authorUrl
-                                      type:EVGTagTypeAuthor
-                                      name:authorName
-                            evgDescription:nil];
-        
-        article.tags = @[author];
+        if (authorUrl.length) {
+            EVGTag *author = [EVGTag tagWithId:authorUrl
+                                          type:EVGTagTypeAuthor
+                                          name:authorName
+                                evgDescription:nil];
+            
+            article.tags = @[author];
+        }
     }
     
-    [self.evergageScreen viewItem:article];
+    //[self.evergageScreen viewItem:article];
+    self.article = article;
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    __weak typeof(self) weakSelf = self;
+    [self.evergageScreen setCampaignHandler:^(EVGCampaign * _Nonnull campaign) {
+        [weakSelf handleCampaign:campaign];
+    } forTarget:@"SimilarArticlesRec"];
     
+    //[self.evergageScreen viewItemWithCustomAction:@"Get Similar Articles"];
+    [[Evergage sharedInstance] setUserAttribute:@"Similar Articles" forName:@"latestViewItemAction"];
+    [self.evergageScreen viewItem:self.article];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     [self.baseView removeFromSuperview];
+}
+
+- (void)handleCampaign:(EVGCampaign * _Nonnull)campaign {
+    NSArray<NSDictionary *> *articlesJson = campaign.data[@"articles"];
+    if (!campaign.isControlGroup && articlesJson.count) {
+        NSArray<EVGItem *> *items = [EVGItem fromJSONArray:articlesJson];
+        NSLog(@"Received and parsed %lu similar articles", (unsigned long)items.count);
+    }
+    [self.evergageScreen trackImpression:campaign];
 }
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
